@@ -10,7 +10,7 @@ bool TruthEventConsistency::HasPID(long long index, int pid) {
     if (index < 0 || index > numTruthParticles) return -1;
 
     // Get particle
-    GenParticle *particle = GENPARTICLE(truthParticles[index]);
+    GenParticle *particle = GENPARTICLE(truthParticles->At(index));
 
     return abs(particle->PID) == pid;
 }
@@ -20,7 +20,7 @@ long long  TruthEventConsistency::GetParent(long long  index) {
     if (index < 0 || index > numTruthParticles) return -1;
 
     // Get particle
-    GenParticle *particle = GENPARTICLE(truthParticles[index]);
+    GenParticle *particle = GENPARTICLE(truthParticles->At(index));
 
     // Valid parent particle?
     if (particle->M1 < 0 || particle->M1 > numTruthParticles) return -1;
@@ -33,13 +33,13 @@ long long  TruthEventConsistency::GetParentOfType(long long  index, int pid) {
     if (index < 0 || index > numTruthParticles) return -1;
 
     // Get particle
-    GenParticle *particle = GENPARTICLE(truthParticles[index]);
+    GenParticle *particle = GENPARTICLE(truthParticles->At(index));
 
     // Valid parent particle?
     if (particle->M1 < 0 || particle->M1 > numTruthParticles) return -1;
 
     // Get parent particle
-    GenParticle *parent = GENPARTICLE(truthParticles[particle->M1]);
+    GenParticle *parent = GENPARTICLE(truthParticles->At(particle->M1));
 
     // Right PID?
     if (abs(parent->PID) != pid) return -1;
@@ -52,13 +52,13 @@ long long  TruthEventConsistency::GetSibling(long long index) {
     if (index < 0 || index > numTruthParticles) return -1;
 
     // Get particle
-    GenParticle *particle = GENPARTICLE(truthParticles[index]);
+    GenParticle *particle = GENPARTICLE(truthParticles->At(index));
 
     // Valid parent particle?
     if (particle->M1 < 0 || particle->M1 > numTruthParticles) return -1;
 
     // Get parent particle
-    GenParticle *parent = GENPARTICLE(truthParticles[particle->M1]);
+    GenParticle *parent = GENPARTICLE(truthParticles->At(particle->M1));
 
     if (parent->D1 == index) {
         // go for D2
@@ -80,7 +80,7 @@ long long  TruthEventConsistency::GetSiblingOfType(long long index, int pid) {
     long long siblingIndex = GetSibling(index);
     if (siblingIndex < 0 || siblingIndex > numTruthParticles) return -1;
 
-    GenParticle *sibling = GENPARTICLE(truthParticles[siblingIndex]);
+    GenParticle *sibling = GENPARTICLE(truthParticles->At(siblingIndex));
 
     if (abs(sibling->PID) != pid) return -1;
     return siblingIndex;
@@ -117,11 +117,11 @@ void TruthEventConsistency::ProcessEvent() {
         long long i_parent = GetParent(i_w1);
 
         if (i_photon >= 0 && i_w1 >= 0 && i_w2 >= 0 && i_parent >= 0) {
-            GenParticle* ds = GENPARTICLE(truthParticles[i]);
-            GenParticle* photon = GENPARTICLE(truthParticles[i_photon]);
-            GenParticle* w1 = GENPARTICLE(truthParticles[i_w1]);
-            GenParticle* w2 = GENPARTICLE(truthParticles[i_w2]);
-            GenParticle* parent = GENPARTICLE(truthParticles[ii_parent]);
+            GenParticle* ds = GENPARTICLE(truthParticles->At(i));
+            GenParticle* photon = GENPARTICLE(truthParticles->At(i_photon));
+            GenParticle* w1 = GENPARTICLE(truthParticles->At(i_w1));
+            GenParticle* w2 = GENPARTICLE(truthParticles->At(i_w2));
+            GenParticle* parent = GENPARTICLE(truthParticles->At(i_parent));
 
             parent_momentum->Fill(parent->P);
             parent_pt->Fill(parent->PT);

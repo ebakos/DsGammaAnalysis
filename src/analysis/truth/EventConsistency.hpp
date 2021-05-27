@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TH1.h"
+#include "TClonesArray.h"
 #include "classes/DelphesClasses.h"
 #include "external/ExRootAnalysis/ExRootTreeReader.h"
 
