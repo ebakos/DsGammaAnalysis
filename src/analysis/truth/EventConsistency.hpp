@@ -1,9 +1,12 @@
 #pragma once
 
 #include "TH1.h"
+#include "TH2.h"
 #include "TClonesArray.h"
 #include "classes/DelphesClasses.h"
 #include "external/ExRootAnalysis/ExRootTreeReader.h"
+
+#include "analysis/AnalysisTool.hpp"
 
 
 #define PID_PARTICLE_DSPLUS 431
@@ -11,7 +14,7 @@
 #define PID_PARTICLE_PHOTON 22
 
 
-class TruthEventConsistency
+class TruthEventConsistency: AnalysisTool
 {
   private:
     long long numTruthParticles;
@@ -28,6 +31,11 @@ class TruthEventConsistency
     TH1D* gamma_momentum;
     TH1D* gamma_pt;
 
+    TH1D* delta_phi_ds_gamma;
+    TH1D* delta_eta_ds_gamma;
+    TH1D* delta_r_ds_gamma;
+    TH2D* delta_ds_gamma;
+
     unsigned long long valid_events;
     unsigned long long invalid_events;
 
@@ -39,6 +47,6 @@ class TruthEventConsistency
 
   public:
     TruthEventConsistency(ExRootTreeReader*);
-    void ProcessEvent();
-    void Finalize();
+    virtual void ProcessEvent();
+    virtual void Finalize();
 };

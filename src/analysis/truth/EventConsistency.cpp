@@ -88,16 +88,22 @@ long long  TruthEventConsistency::GetSiblingOfType(long long index, int pid) {
 
 
 TruthEventConsistency::TruthEventConsistency(ExRootTreeReader* reader) {
-    parent_momentum = new TH1D("parent_momentum", "W+W- parent particle momentum", 100, 10.0, 210.0);
+    parent_momentum = new TH1D("parent_momentum", "W+W- parent particle momentum", 100, 0.01, .21);
+    wplus_momentum = new TH1D("wplus_momentum", "W+ particle momentum", 100, 0.0, 0.1);
+    wminus_momentum = new TH1D("wminus_momentum", "W- particle momentum", 100, 0.0, 0.1);
+    ds_momentum = new TH1D("ds_momentum", "Ds particle momentum", 50, 0.0, 0.1);
+    gamma_momentum = new TH1D("gamma_momentum", "Gamma particle momentum", 50, 0.0, 0.1);
+
     parent_pt = new TH1D("parent_pt", "W+W- parent particle pt", 100, 10.0, 210.0);
-    wplus_momentum = new TH1D("wplus_momentum", "W+ particle momentum", 100, 0.0, 200.0);
-    wminus_momentum = new TH1D("wminus_momentum", "W- particle momentum", 100, 0.0, 200.0);
-    wplus_pt = new TH1D("wplus_pt", "W+ particle pt", 100, 0.0, 150.0);
-    wminus_pt = new TH1D("wminus_pt", "W- particle pt", 100, 0.0, 150.0);
-    ds_momentum = new TH1D("ds_momentum", "Ds particle momentum", 50, 0.0, 100.0);
-    ds_pt = new TH1D("ds_pt", "Ds particle pt", 50, 0.0, 100.0);
-    gamma_momentum = new TH1D("gamma_momentum", "Gamma particle momentum", 50, 0.0, 100.0);
-    gamma_pt = new TH1D("gamma_pt", "Gamma particle pt", 50, 0.0, 100.0);
+    wplus_pt = new TH1D("wplus_pt", "W+ particle pt", 150, 0.0, 75.0);
+    wminus_pt = new TH1D("wminus_pt", "W- particle pt", 150, 0.0, 75.0);
+    ds_pt = new TH1D("ds_pt", "Ds particle pt", 50, 0.0, 75.0);
+    gamma_pt = new TH1D("gamma_pt", "Gamma particle pt", 50, 0.0, 75.0);
+
+    delta_phi_ds_gamma = new TH1D("delta_phi_ds_gamma", "Delta-Phi Ds-Gamma", 40, 0., M_PI);
+    delta_eta_ds_gamma = new TH1D("delta_eta_ds_gamma", "Delta-Eta Ds-Gamma", 40, 0., 10.0);
+    delta_r_ds_gamma = new TH1D("delta_r_ds_gamma", "Delta-R Ds-Gamma", 40, 0., 40.0);
+    delta_ds_gamma = new TH2D("delta_ds_gamma", "Delta Ds-Gamma", 40, 0., M_PI, 40, 0., 10.);
 
     truthParticles = reader->UseBranch("Particle");
     valid_events = 0;
@@ -143,6 +149,11 @@ void TruthEventConsistency::ProcessEvent() {
                 wminus_momentum->Fill(w1->P);
                 wminus_pt->Fill(w1->PT);
             }
+
+            delta_phi_ds_gamma->Fill(ds->P4().DeltaPhi(photon->P4()));
+            delta_eta_ds_gamma->Fill(abs(ds->Eta - photon->Eta));
+            delta_r_ds_gamma->Fill(ds->P4().DeltaR(photon->P4()));
+            delta_ds_gamma->Fill(ds->P4().DeltaPhi(photon->P4()), abs(ds->Eta - photon->Eta));
 
             event_valid = true;
             break;

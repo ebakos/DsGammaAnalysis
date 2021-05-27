@@ -4,6 +4,8 @@
 
 #include <cstring>
 #include <iostream>
+#include <vector>
+#include <memory>
 #include <string>
 
 #include "TFile.h"
@@ -12,14 +14,13 @@
 
 int main(int argc, char* argv[]) {
     if (argc < 4) {
-        std::cout << "Usage: " << argv[0] << " <operation> <in_file> <out_file>" << std::endl;
+        std::cout << "Usage: " << argv[0] << "<in_file> <out_file> <operations...>" << std::endl;
         std::cout << "Operations: event_consistency" << std::endl;
         return 1;
     }
 
-    std::string operation(argv[1]);
-    std::string in_file(argv[2]);
-    std::string out_file(argv[3]);
+    std::string in_file(argv[1]);
+    std::string out_file(argv[2]);
 
     TChain *chain = new TChain("Delphes");
     chain->Add(in_file.c_str());
@@ -33,23 +34,35 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    if (operation == "event_consistency") {
-        TruthEventConsistency consistency(treeReader);
+    std::vector<AnalysisTool*> tools;
 
-        long long entries = treeReader->GetEntries();
-        std::cout << "** Chain contains " << entries << " events." << std::endl;
+    for (int i = 3; i < argc; ++i) {
+        std::string operation(argv[i]);
 
-        for (long long entry = 0; entry < entries; ++entry) {
-            treeReader->ReadEntry(entry);
-
-            consistency.ProcessEvent();
+        if (operation == "event_consistency") {
+            std::cout << "Running operation " << operation << "." << std::endl;
+            AnalysisTool* tool = (AnalysisTool*) new TruthEventConsistency(treeReader);
+        } else {
+            std::cout << "Unknow operation '" << operation << "'." << std::endl;
+            return 1;
         }
-
-        consistency.Finalize();
-    } else {
-        std::cout << "Unknows operation '" << operation << "'." << std::endl;
-        return 1;
     }
+
+    long long entries = treeReader->GetEntries();
+    std::cout << "** Chain contains " << entries << " events." << std::endl;
+
+    for (long long entry = 0; entry < entries; ++entry) {
+        treeReader->ReadEntry(entry);
+
+        for (auto tool: tools)
+            tool->ProcessEvent();
+    }
+
+    for (auto tool: tools)
+        tool->Finalize();
+
+    for (auto tool: tools)
+        delete tool;
 
     out->Write();
     out->Close();
