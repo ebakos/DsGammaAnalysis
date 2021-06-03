@@ -1,6 +1,7 @@
 #include "external/ExRootAnalysis/ExRootTreeReader.h"
 #include "analysis/truth/EventConsistency.hpp"
-
+#include "analysis/reconstruction/RecoAnalysis.hpp"
+#include "analysis/plot/Plot.hpp"
 
 #include <cstring>
 #include <iostream>
@@ -12,15 +13,25 @@
 #include "TChain.h"
 
 
-int main(int argc, char* argv[]) {
-    if (argc < 4) {
-        std::cout << "Usage: " << argv[0] << "<in_file> <out_file> <operations...>" << std::endl;
-        std::cout << "Operations: event_consistency" << std::endl;
+int plotter(std::vector<std::string> files) {
+    std::cout << "Running mode plot." << std::endl;
+
+    if (files.size() > 2)
+    {
+        std::cout<<"More than two input file provided for plotting. This is not implemented (yet..)"<<std::endl;
         return 1;
     }
 
-    std::string in_file(argv[1]);
-    std::string out_file(argv[2]);
+    Plotter theplotter(files);
+    theplotter.ProcessFiles();
+    theplotter.Finalize();
+    return 0;
+}
+
+
+int analysis(std::string in_file, std::string out_file, std::vector<std::string> tool_names)
+{
+    std::cout << "Running mode analysis." << std::endl;
 
     TChain *chain = new TChain("Delphes");
     chain->Add(in_file.c_str());
@@ -33,15 +44,17 @@ int main(int argc, char* argv[]) {
         std::cout << "Error opening output file, does it already exist?" << std::endl;
         return 1;
     }
-
+    
     std::vector<AnalysisTool*> tools;
 
-    for (int i = 3; i < argc; ++i) {
-        std::string operation(argv[i]);
-
+    for (auto operation : tool_names) {
+        std::cout << "Adding operation " << operation << "." << std::endl;
         if (operation == "event_consistency") {
-            std::cout << "Running operation " << operation << "." << std::endl;
             AnalysisTool* tool = (AnalysisTool*) new TruthEventConsistency(treeReader);
+            tools.push_back(tool); 
+        } else if (operation == "reco") {
+            AnalysisTool* tool = (AnalysisTool*) new RecoAnalysis(treeReader);
+            tools.push_back(tool);
         } else {
             std::cout << "Unknow operation '" << operation << "'." << std::endl;
             return 1;
@@ -67,6 +80,44 @@ int main(int argc, char* argv[]) {
     out->Write();
     out->Close();
     delete out;
+    return 0;
+}
 
+int main(int argc, char* argv[]) {
+    if (argc < 3) {
+        std::cout << "Mode analysis, operations: event_consistency, reco" << std::endl;
+        std::cout << "Usage: " << argv[0] << " analysis <in_file> <out_file> <operation1> [operation2]" << std::endl;
+        std::cout << "Mode: plot" << std::endl;
+        std::cout << "Usage #1: " << argv[0] << " plot <in_file1> <in_file2>" << std::endl;
+        std::cout << "Usage #2: " << argv[0] << " plot <in_file1>" << std::endl;
+        return 1;
+    }
+
+    std::string mode(argv[1]);
+
+    if (mode == "plot") {
+        std::vector<std::string> files;
+
+        for (int i = 2; i < argc; ++i)
+            files.emplace_back(argv[i]);
+
+        return plotter(files);
+    } else if (mode == "analysis") {
+        if (argc < 4) {
+            std::cout << "Need at least an in_file, out_file and a tool" << std::endl;
+            return 1;
+        }
+        std::string in_file(argv[2]);
+        std::string out_file(argv[3]);
+        std::vector<std::string> tools;
+        
+        for(int i = 4; i < argc; ++i)
+            tools.emplace_back(argv[i]);
+
+        return analysis(in_file, out_file, tools);
+    } else {
+        std::cout << "Unknown mode " << mode << "." << std::endl;
+        return 1;
+    }
     return 0;
 }
