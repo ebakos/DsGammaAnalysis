@@ -9,7 +9,7 @@ This program can be used for analysing Monte-Carlo samples generated with Madrap
 
 This part of the program doing the truth event validation. We are looking for the Ds particle, checking its sibling, what is a photon, checking the parents, and the sibling of a parent (both W boson). The event consistency also making histograms filled with some relevant variables.
 
-### REconstructed object analyser:
+### Reconstructed object analyser:
 
 This part of the program is looking for the reconstructed objects, most importantly the reconstructed W from the Ds and the photon. The progam also fills some of the relevant variables into histograms. 
 
