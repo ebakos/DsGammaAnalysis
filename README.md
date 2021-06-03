@@ -13,7 +13,7 @@ This part of the program doing the truth event validation. We are looking for th
 
 This part of the program is looking for the reconstructed objects, most importantly the reconstructed W from the Ds and the photon. The progam also fills some of the relevant variables into histograms. 
 
-### Plotter
+### Plotter:
 
 Plots the previoulsy made histograms, possibly overlays them. 
 
