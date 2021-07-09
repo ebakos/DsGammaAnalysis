@@ -14,27 +14,21 @@ void Plotter::myText(Double_t x,Double_t y,Color_t color, const char *text) {
 
 Plotter::Plotter(std::vector<std::string> input_files) : input_files(input_files) {
 
-    llable = "CLIC, #sqrt{s} = 200 GeV";
+    llable = "ATLAS, #sqrt{s} = 14 TeV";
     reg_lab = "W(D_{s}, #gamma)";
 
     //plots to plot
-    variables = {"wplus_pt",
-                "wminus_pt",
-                "gamma_pt",
-                "ds_pt",
-                "delta_phi_ds_gamma",
-                "delta_eta_ds_gamma",
-                "delta_r_ds_gamma",
-                "delta_phi_wp_wm",
-                "delta_eta_wp_wm",
-                "delta_r_wp_wm",
-                "wplus_energy",
-                "wminus_energy",
-                "ds_energy",
-                "gamma_energy",
-                "wplus_eta",
-                "wminus_eta",
-                "ds_charge",
+    variables = {"truth_w_pt",
+                "truth_gamma_pt",
+                "truth_ds_pt",
+                "truth_delta_phi_ds_gamma",
+                "truth_delta_eta_ds_gamma",
+                "truth_delta_r_ds_gamma",
+                "truth_w_energy",
+                "truth_ds_energy",
+                "truth_gamma_energy",
+                "truth_w_eta",
+                "truth_ds_charge",
                 "reco_w_mass",
                 "reco_w_pT",
                 "reco_w_deltaPhi",
@@ -45,22 +39,16 @@ Plotter::Plotter(std::vector<std::string> input_files) : input_files(input_files
                 "reco_w_photon_pT",
                 "reco_w_jet_pT"
                 };
-    titles = {"Truth p_{T} (W^{+}) [GeV]",
-                "Truth p_{T} (W^{-}) [GeV]",
+    titles = {"Truth p_{T} (W) [GeV]",
                 "Truth p_{T} (#gamma_{W}) [GeV]",
                 "Truth p_{T} (Ds_{W}) [GeV]",
                 "Truth #Delta#phi (Ds_{W},#gamma_{W})",
                 "Truth #Delta#eta (Ds_{W},#gamma_{W})",
                 "Truth #DeltaR (Ds_{W},#gamma_{W})",
-                "Truth #Delta#phi (W^{+},W^{-})",
-                "Truth #Delta#eta (W^{+},W^{-})",
-                "Truth #DeltaR (W^{+},W^{-})",
-                "Truth E (W^{+})  [GeV]",
-                "Truth E (W^{-})  [GeV]",
+                "Truth E (W)  [GeV]",
                 "Truth E (#gamma)  [GeV]",
                 "Truth E (Ds)  [GeV]",
-                "Truth #eta (W^{+})  [GeV]",
-                "Truth #eta (W^{-})  [GeV]",
+                "Truth #eta (W)  [GeV]",
                 "Truth Ds_{W} charge",
                 "Reconstructed W mass (D_{s},#gamma) [GeV]",
                 "Reconstructed p_{T} (W) [GeV]",
@@ -92,6 +80,7 @@ void Plotter::ProcessFiles(){
     for (size_t i = 0; i < variables.size(); i++) {
         mkdir("./plots", 0770);
 
+
         TLegend *legend = new TLegend(0.60, 0.75, 0.84, 0.89);
         legend->SetBorderSize(0);
         legend->SetTextFont(43);
@@ -104,8 +93,10 @@ void Plotter::ProcessFiles(){
         myhist1->SetTitle("");
         myhist1->GetXaxis()->SetTitle(titles[i].c_str());
         myhist1->GetYaxis()->SetTitle("Events");
-        if (input_files[0] == "Wminus_plots.root") legend->AddEntry(myhist1, "W^{-}(Ds, #gamma)", "l");
-        else if (input_files[0] == "Wplus_plots.root") legend->AddEntry(myhist1, "W^{+}(Ds, #gamma)", "l");
+        if (input_files[0] == "WminusPlots.root") legend->AddEntry(myhist1, "W^{-}(Ds, #gamma)", "l");
+        else if (input_files[0] == "WplusPlots.root") legend->AddEntry(myhist1, "W^{+}(Ds, #gamma)", "l");
+        else if (input_files[0] == "signal_plots.root") legend->AddEntry(myhist1, "W(Ds, #gamma)", "l");
+        else if (input_files[0] == "background_plots.root") legend->AddEntry(myhist1, "Background", "l");
         else legend->AddEntry(myhist2, input_files[0].c_str(), "l");
         
         myhist1->SetMaximum(1.5*myhist1->GetMaximum());
@@ -119,8 +110,10 @@ void Plotter::ProcessFiles(){
             myhist2->SetTitle("");
             myhist2->GetXaxis()->SetTitle(titles[i].c_str());
             myhist2->GetYaxis()->SetTitle("Events");
-            if (input_files[1] == "Wminus_plots.root") legend->AddEntry(myhist2, "W^{-}(Ds, #gamma)", "l");
-            else if (input_files[1] == "Wplus_plots.root") legend->AddEntry(myhist2, "W^{+}(Ds, #gamma)", "l");
+            if (input_files[1] == "WminusPlots.root") legend->AddEntry(myhist2, "W^{-}(Ds, #gamma)", "l");
+            else if (input_files[1] == "WplusPlots.root") legend->AddEntry(myhist2, "W^{+}(Ds, #gamma)", "l");
+            else if (input_files[1] == "signal_plots.root") legend->AddEntry(myhist2, "W(Ds, #gamma)", "l");
+            else if (input_files[1] == "background_plots.root") legend->AddEntry(myhist2, "Background", "l");
             else legend->AddEntry(myhist2, input_files[1].c_str(), "l");
         }
 

@@ -4,7 +4,7 @@
 
 
 RecoAnalysis::RecoAnalysis(ExRootTreeReader* reader) {
-    jets = reader->UseBranch("KTjet");
+    jets = reader->UseBranch("Jet");
     photons = reader->UseBranch("Photon");
     electrons = reader->UseBranch("Electron");
     muons = reader->UseBranch("Muon");

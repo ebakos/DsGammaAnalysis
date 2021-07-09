@@ -28,16 +28,6 @@ long long  TruthEventConsistency::GetParent(long long  index) {
     // Valid parent particle?
     if (particle->M1 < 0 || particle->M1 >= numTruthParticles) return -1;
 
-    // Get parent particle
-    GenParticle *parent = GENPARTICLE(truthParticles->At(particle->M1));
-
-    if (parent->M1 >= 0 && parent->M1 < numTruthParticles) {
-        GenParticle *grandfather = GENPARTICLE(truthParticles->At(parent->M1));
-        if (grandfather->D1 == particle->M1 && grandfather->D2 == particle->M1) {
-            return GetParent(particle->M1);
-        }
-    }
-
     return particle->M1;
 }
 
@@ -55,6 +45,7 @@ long long  TruthEventConsistency::GetParentOfType(long long  index, int pid) {
     GenParticle *parent = GENPARTICLE(truthParticles->At(i_parent));
 
     // Right PID?
+    //std::cout<<"Parent for particle index#"<<index<<"parent index#"<<i_parent<<" PID:"<<parent->PID<<std::endl;
     if (abs(parent->PID) != pid) return -1;
 
     return i_parent;
@@ -113,7 +104,7 @@ long long  TruthEventConsistency::GetSiblingOfType(long long index, int pid) {
     if (siblingIndex < 0 || siblingIndex >= numTruthParticles) return -1;
 
     GenParticle *sibling = GENPARTICLE(truthParticles->At(siblingIndex));
-
+    //std::cout<<"Sibling index#"<<index<<"parent index#"<<siblingIndex<<" PIDL "<<abs(sibling->PID)<<std::endl;
     if (abs(sibling->PID) != pid) return -1;
     return siblingIndex;
 }
@@ -138,43 +129,33 @@ void TruthEventConsistency::QuickTreePrint(long long index) {
     for(long long i = 0; i < index+3; ++i) {
         GenParticle *p = GENPARTICLE(truthParticles->At(i));
 
-        std::cout << i << " " << p->PID
-            << " S: " << p->Status
-            << " M1: " << p->M1
-            << " M2: " << p->M2
-            << " D1: " << p->D1
-            << " D2: " << p->D2 << std::endl;
+        std::cout << i << "PID: " << p->PID
+            << " Status: " << p->Status
+            << " Mother1: " << p->M1
+            << " Mother2: " << p->M2
+            << " Daughter1: " << p->D1
+            << " Daughter2: " << p->D2 << std::endl;
     }
     
     std::cout << std::endl << std::endl;
 }
 
 TruthEventConsistency::TruthEventConsistency(ExRootTreeReader* reader) {
-    parent_energy = new TH1D("parent_energy", "W+W- parent particle energy", 100, 0., 500.);
-    wplus_energy = new TH1D("wplus_energy", "W+ particle energy", 100, 90.0, 110.);
-    wminus_energy = new TH1D("wminus_energy", "W- particle energy", 100, 90.0, 110.);
-    ds_energy = new TH1D("ds_energy", "Ds particle energy", 50, 0.0, 100.);
-    gamma_energy = new TH1D("gamma_energy", "Gamma particle energy", 50, 0.0, 100.);
-
-    parent_pt = new TH1D("parent_pt", "W+W- parent particle pt", 100, 0.0, 100.0);
-    wplus_pt = new TH1D("wplus_pt", "W+ particle pt", 100, 0.0, 100.0);
-    wminus_pt = new TH1D("wminus_pt", "W- particle pt", 100, 0.0, 100.0);
-    ds_pt = new TH1D("ds_pt", "Ds particle pt", 100, 0.0, 100.0);
-    gamma_pt = new TH1D("gamma_pt", "Gamma particle pt", 100, 0.0, 100.0);
-
-    ds_charge = new TH1D("ds_charge", "Ds particle charge", 8, -2, 2);
+    w_energy = new TH1D("truth_w_energy", "W energy", 100, 0., 500.);
+    w_pt = new TH1D("truth_w_pt", "W pt", 100, 0.0, 100.0);
+    w_eta = new TH1D("truth_w_eta", "W eta", 80, -10., 10.0);
     
-    wplus_eta = new TH1D("wplus_eta", "Eta W+", 80, -10., 10.0);
-    wminus_eta = new TH1D("wminus_eta", "Eta W-", 80, -10., 10.0);
+    ds_energy = new TH1D("truth_ds_energy", "Ds particle energy", 50, 0.0, 100.);
+    gamma_energy = new TH1D("truth_gamma_energy", "Gamma particle energy", 50, 0.0, 100.);
+    ds_pt = new TH1D("truth_ds_pt", "Ds particle pt", 100, 0.0, 100.0);
+    gamma_pt = new TH1D("truth_gamma_pt", "Gamma particle pt", 100, 0.0, 100.0);
+    ds_charge = new TH1D("truth_ds_charge", "Ds particle charge", 8, -2, 2);
+    
+    delta_phi_ds_gamma = new TH1D("truth_delta_phi_ds_gamma", "Delta-Phi Ds-Gamma", 80, -4., 4);
+    delta_eta_ds_gamma = new TH1D("truth_delta_eta_ds_gamma", "Delta-Eta Ds-Gamma", 40, 0., 10.0);
+    delta_r_ds_gamma = new TH1D("truth_delta_r_ds_gamma", "Delta-R Ds-Gamma", 60, 0., 6.);
+    delta_ds_gamma = new TH2D("truth_delta_ds_gamma", "Delta Ds-Gamma", 40, -4., 4, 40, 0., 10.);
 
-    delta_phi_ds_gamma = new TH1D("delta_phi_ds_gamma", "Delta-Phi Ds-Gamma", 80, -4., 4);
-    delta_eta_ds_gamma = new TH1D("delta_eta_ds_gamma", "Delta-Eta Ds-Gamma", 40, 0., 10.0);
-    delta_r_ds_gamma = new TH1D("delta_r_ds_gamma", "Delta-R Ds-Gamma", 60, 0., 6.);
-    delta_ds_gamma = new TH2D("delta_ds_gamma", "Delta Ds-Gamma", 40, -4., 4, 40, 0., 10.);
-
-    delta_phi_wp_wm = new TH1D("delta_phi_wp_wm", "Delta-Phi W+W-", 80, -4., 4);
-    delta_eta_wp_wm = new TH1D("delta_eta_wp_wm", "Delta-Eta W+W-", 40, 0., 10.0);
-    delta_r_wp_wm = new TH1D("delta_r_wp_wm", "Delta-R W+W-", 60, 0., 6.);
 
     truthParticles = reader->UseBranch("Particle");
     valid_events = 0;
@@ -189,30 +170,18 @@ void TruthEventConsistency::ProcessEvent() {
         if (!HasPID(i, PID_PARTICLE_DSPLUS)) continue;
 
         long long i_photon = GetSiblingOfType(i, PID_PARTICLE_PHOTON);
-        long long i_w1 = GetParentOfType(i, PID_PARTICLE_W);
-        long long i_w2 = GetSiblingOfType(i_w1, PID_PARTICLE_W);
+        long long i_w = GetParentOfType(i, PID_PARTICLE_W);
 
-        long long wparent = i_w1;
-        
-        while(i_w2 == -1) {
-            wparent = GetParentOfType(wparent, PID_PARTICLE_W);
-            long long radiative_g = GetDaughterOfType(wparent, PID_PARTICLE_PHOTON);
-
-            if (wparent == -1 || radiative_g == -1) break;
-
-            i_w2 = GetSiblingOfType(wparent, PID_PARTICLE_W);
-        }
-
-        if (i_photon >= 0 && i_w1 >= 0 && i_w2 >= 0) {
+        if (i_photon >= 0 && i_w >= 0 ) {
             GenParticle* ds = GENPARTICLE(truthParticles->At(i));
             GenParticle* photon = GENPARTICLE(truthParticles->At(i_photon));
-            GenParticle* w1 = GENPARTICLE(truthParticles->At(i_w1));
-            GenParticle* w2 = GENPARTICLE(truthParticles->At(i_w2));
+            GenParticle* w = GENPARTICLE(truthParticles->At(i_w));
 
-            TLorentzVector parent = w1->P4() + w2->P4();
+            TLorentzVector parent = w->P4();
 
-            parent_energy->Fill(parent.E());
-            parent_pt->Fill(parent.Pt());
+            w_energy->Fill(parent.E());
+            w_pt->Fill(parent.Pt());
+            w_eta->Fill(parent.Eta());
 
             ds_energy->Fill(ds->E);
             ds_pt->Fill(ds->PT);
@@ -221,33 +190,11 @@ void TruthEventConsistency::ProcessEvent() {
             gamma_energy->Fill(photon->E);
             gamma_pt->Fill(photon->PT);
 
-            if (w1->PID == 24) {
-                wplus_energy->Fill(w1->E);
-                wplus_pt->Fill(w1->PT);
-                wminus_energy->Fill(w2->E);
-                wminus_pt->Fill(w2->PT);
-
-                wplus_eta->Fill(w1->Eta);
-                wminus_eta->Fill(w2->Eta);
-            } else {
-                wplus_energy->Fill(w2->E);
-                wplus_pt->Fill(w2->PT);
-                wminus_energy->Fill(w1->E);
-                wminus_pt->Fill(w1->PT);
-                
-                wplus_eta->Fill(w2->Eta);
-                wminus_eta->Fill(w1->Eta);
-            }
-
             delta_phi_ds_gamma->Fill(ds->P4().DeltaPhi(photon->P4()));
             delta_eta_ds_gamma->Fill(abs(ds->Eta - photon->Eta));
             delta_r_ds_gamma->Fill(ds->P4().DeltaR(photon->P4()));
             delta_ds_gamma->Fill(ds->P4().DeltaPhi(photon->P4()), abs(ds->Eta - photon->Eta));
 
-            delta_phi_wp_wm->Fill(w1->P4().DeltaPhi(w2->P4()));
-            delta_eta_wp_wm->Fill(abs(w1->Eta - w2->Eta));
-            delta_r_wp_wm->Fill(w1->P4().DeltaR(w2->P4()));
-            
             event_valid = true;
             break;
         }
@@ -257,7 +204,7 @@ void TruthEventConsistency::ProcessEvent() {
             GenParticle* parent = GENPARTICLE(truthParticles->At(ds->M1));
             if (parent->PID == 24 && parent->M1 >= 0) {
                 QuickTreePrint(i);
-                std::cout << "i: " << i << " gamma:" << i_photon << " w1:" << i_w1 << " w2:" << i_w2 << std::endl;
+                std::cout << "i: " << i << " gamma:" << i_photon << " w:" << i_w << std::endl;
             }
         }
     }
