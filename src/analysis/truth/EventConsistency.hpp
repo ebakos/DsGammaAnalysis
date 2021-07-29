@@ -51,4 +51,6 @@ class TruthEventConsistency: AnalysisTool
     TruthEventConsistency(ExRootTreeReader*);
     virtual void ProcessEvent();
     virtual void Finalize();
+
+    long long GetDS();
 };

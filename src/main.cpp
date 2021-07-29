@@ -1,6 +1,7 @@
 #include "external/ExRootAnalysis/ExRootTreeReader.h"
 #include "analysis/truth/EventConsistency.hpp"
 #include "analysis/reconstruction/RecoAnalysis.hpp"
+#include "analysis/ntupler/NTupler.hpp"
 #include "analysis/plot/Plot.hpp"
 
 #include <cstring>
@@ -47,7 +48,9 @@ int analysis(std::string in_file, std::string out_file, std::vector<std::string>
     
     std::vector<AnalysisTool*> tools;
 
-    for (auto operation : tool_names) {
+    for (size_t i = 0; i < tool_names.size(); ++i) {
+        auto operation = tool_names[i];
+
         std::cout << "Adding operation " << operation << "." << std::endl;
         if (operation == "event_consistency") {
             AnalysisTool* tool = (AnalysisTool*) new TruthEventConsistency(treeReader);
@@ -55,8 +58,12 @@ int analysis(std::string in_file, std::string out_file, std::vector<std::string>
         } else if (operation == "reco") {
             AnalysisTool* tool = (AnalysisTool*) new RecoAnalysis(treeReader);
             tools.push_back(tool);
-        } else {
-            std::cout << "Unknow operation '" << operation << "'." << std::endl;
+        } else if (operation == "ntupler") {
+            AnalysisTool* tool = (AnalysisTool*) new NTupler(tool_names[i+1] == "signal", treeReader);
+            i += 1;
+            tools.push_back(tool);
+        }else {
+            std::cout << "Unknown operation '" << operation << "'." << std::endl;
             return 1;
         }
     }

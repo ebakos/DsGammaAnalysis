@@ -162,6 +162,26 @@ TruthEventConsistency::TruthEventConsistency(ExRootTreeReader* reader) {
     invalid_events = 0;
 }
 
+
+
+long long TruthEventConsistency::GetDS() {
+    numTruthParticles = truthParticles->GetEntriesFast();
+
+    bool event_valid = false;
+    for (long long i = 0; i < numTruthParticles; ++i) {
+        if (!HasPID(i, PID_PARTICLE_DSPLUS)) continue;
+
+        long long i_photon = GetSiblingOfType(i, PID_PARTICLE_PHOTON);
+        long long i_w = GetParentOfType(i, PID_PARTICLE_W);
+
+        if (i_photon >= 0 && i_w >= 0) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
 void TruthEventConsistency::ProcessEvent() {
     numTruthParticles = truthParticles->GetEntriesFast();
 
