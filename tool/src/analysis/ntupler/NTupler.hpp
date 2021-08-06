@@ -16,6 +16,13 @@
 #define JET_CONE_STEP 0.1
 #define JET_CONE_N 4 // 0.4/0.1
 
+enum class SampleType {
+    SignalWplus,
+    SignalWminus,
+    BackgroundGG,
+    BackgroundQQ
+};
+
 
 class NTupler: AnalysisTool
 {
@@ -36,12 +43,12 @@ class NTupler: AnalysisTool
 
     Jet* selected_jets[MAX_JETS];
     size_t num_selected_jets;
-    bool signal;
+    SampleType sample_type;
 
     void GetBackgroundEventJets();
     void GetSignalEventJets();
     bool PassCommonJetCuts(Jet* jet);
-    
+
     double br_delta_eta;
     double br_delta_phi;
     double br_n_neutral;
@@ -68,7 +75,7 @@ class NTupler: AnalysisTool
     double br_mass;
     double br_track_magnitude;
 
-    //variables needed for calculation: 
+    //variables needed for calculation:
     double Qjet; //jet charge pt weighted
     double nCharged;
     double Rtrack; //Average dR weighted with pT
@@ -93,7 +100,7 @@ class NTupler: AnalysisTool
     std::array<double, JET_CONE_N> Pcore;
 
   public:
-    NTupler(bool signal, ExRootTreeReader*);
+    NTupler(std::string sample_ident, ExRootTreeReader*);
     virtual void ProcessEvent();
     virtual void Finalize();
 };

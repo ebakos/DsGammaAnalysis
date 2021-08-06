@@ -1,9 +1,10 @@
 #include "analysis/ntupler/NTupler.hpp"
 
 #include <iostream>
+#include <assert.h>
 
 
-NTupler::NTupler(bool signal, ExRootTreeReader* reader) : consistency(reader), signal(signal) {
+NTupler::NTupler(std::string sample_ident, ExRootTreeReader* reader) : consistency(reader) {
     jets = reader->UseBranch("Jet");
     tracks = reader->UseBranch("EFlowTrack");
     branchTower1 = reader->UseBranch("EFlowPhoton");
@@ -35,6 +36,20 @@ NTupler::NTupler(bool signal, ExRootTreeReader* reader) : consistency(reader), s
     tree->Branch("width", &br_width);
     tree->Branch("mass", &br_mass);
     tree->Branch("track_magnitude", &br_track_magnitude);
+
+    if (sample_ident == "SignalWplus") {
+        sample_type = SampleType::SignalWplus;
+    } else if (sample_ident == "SignalWminus") {
+        sample_type = SampleType::SignalWminus;
+    } else if (sample_ident == "BackgroundGG") {
+        sample_type = SampleType::BackgroundGG;
+    } else if (sample_ident == "BackgroundQQ") {
+        sample_type = SampleType::BackgroundQQ;
+    } else {
+        std::cerr << "Please specify the sampletype for ntupler ->" <<
+            " SignalWplus/SignalWminus/BackgroundGG/BackgroundQQ" << std::endl;
+        assert(0);
+    }
 }
 
 bool NTupler::PassCommonJetCuts(Jet* jet) {
@@ -81,17 +96,19 @@ void NTupler::GetBackgroundEventJets() {
 
         if (!PassCommonJetCuts(jet)) continue;
 
-        if (jet->Flavor == 21 || (jet->Flavor > 0 && jet->Flavor < 6)) {
+        if (
+            (sample_type == SampleType::BackgroundGG && jet->Flavor == 21) ||
+            (sample_type == SampleType::BackgroundQQ && (jet->Flavor > 0 && jet->Flavor < 6))
+        ){
             selected_jets[num_selected_jets++] = jet;
         }
     }
-    
 }
 
 void NTupler::ProcessEvent() {
     numTracks = tracks->GetEntriesFast();
 
-    if (signal) {
+    if (sample_type == SampleType::SignalWplus || sample_type == SampleType::SignalWminus) {
         GetSignalEventJets();
     } else {
         GetBackgroundEventJets();
@@ -107,14 +124,14 @@ void NTupler::ProcessEvent() {
         deltaR = 0.;
         SumRtPT = 0.;
         SumPT = 0.;
-        z = 0.; 
-        theta = 0.; 
-        SPT = 0.; 
-        LHA = 0.; 
-        MSS = 0.; 
+        z = 0.;
+        theta = 0.;
+        SPT = 0.;
+        LHA = 0.;
+        MSS = 0.;
         WDT = 0.;
 
-        for(int i = 0; i < JET_CONE_N; ++i) 
+        for(int i = 0; i < JET_CONE_N; ++i)
         {
             Eecone[i] = 0.0;
             Econe[i] = 0.0;
@@ -150,9 +167,9 @@ void NTupler::ProcessEvent() {
 
                 SumPT += pow(jetDir.Dot(track->P4().Vect()),0.5); //used for: Qjet
                 SumRtPT += track->PT; //sum of the track pt
-            
             }
-            //it is a energy deposit
+
+            // It is a energy deposit
             else if (object->IsA() == Tower::Class()) {
                 Tower* tower = (Tower *) object;
 
@@ -160,31 +177,34 @@ void NTupler::ProcessEvent() {
                 z = tower->ET / jet-> PT;
                 theta = deltaR / JET_CONE;
                 Rem += tower->Eem *deltaR; //deltaR EM reweighted
-                
+
                 if (deltaR >= JET_CONE) continue;
 
                 Econe[(int)floor(deltaR / JET_CONE_STEP)] += tower->ET; //summing transverse energy in a cone of 0.1, 0.2,  0.3 and 0.4
                 Eecone[(int)floor(deltaR / JET_CONE_STEP)] += tower->Eem / TMath::CosH(tower->Eta);  //transverse em energy in cones
-            } 
-            //can't be anything else...
+            }
+
+            // We don't care about anything else...
             else {
                 continue;
             }
 
-            LHA += z * sqrt(theta); 
+            LHA += z * sqrt(theta);
             SPT += z * z; //ptd_square
             WDT += z * theta;
             MSS += z * theta * theta;
         }
-        //pcones
+
+        // Pcones
         for (long long j = 0; j < numTracks; ++j) {
             Track *track = (Track *) tracks->At(j);
-            
+
             deltaR = jetMomentum.DeltaR(track->P4());
             if (deltaR >= JET_CONE) continue;
             Pcone[(int)floor(deltaR / JET_CONE_STEP)] += track->PT;
         }
-        //summing up cones: 
+
+        // Cumulative summing cones
         for (int k = 1; k < JET_CONE_N; k++) 
         {
             Econe[k] += Econe[k - 1];
@@ -192,19 +212,25 @@ void NTupler::ProcessEvent() {
             Pcone[k] += Pcone[k - 1];
         }
 
-        //jet charge, pT weighted: 
+        // jet charge, pT weighted
         Qjet /= (SumPT + std::numeric_limits<double>::epsilon());
-        //Average dR weighted with pT
+
+        // Average dR weighted with pT
         Rtrack /= (SumRtPT + std::numeric_limits<double>::epsilon());
+
         // Average dR weighted with EM energy
         Rem /= (Eecone[3] + std::numeric_limits<double>::epsilon());  //Eecone[3] energy in the cone of dR < 0.4
-        if (Rem > 1.5) Rem = 1.5; 
-        //f_em
+        if (Rem > 1.5) Rem = 1.5;
+
+        // f_em
         double Fem = Eecone[3] / (Econe[3] + std::numeric_limits<double>::epsilon());
-        
-        for (uint k = 0; k < Pcone.size(); k++) Pcone[k] /= trackJet.Perp(); //transverse pT
-        //fcores and pcores
-        for (int k = 1; k < JET_CONE_N; k++) 
+
+        // transverse pT
+        for (uint k = 0; k < Pcone.size(); k++)
+            Pcone[k] /= trackJet.Perp();
+
+        // fcores and pcores
+        for (int k = 1; k < JET_CONE_N; k++)
         {
             Fcore[k] = Econe[k-1] / (Econe[JET_CONE_N-1] + std::numeric_limits<double>::epsilon());
             Pcore[k] = Pcone[k-1] / (Pcone[JET_CONE_N-1] + std::numeric_limits<double>::epsilon());
@@ -232,9 +258,9 @@ void NTupler::ProcessEvent() {
         br_les_houches_angularity = LHA;
         br_width = WDT;
         br_mass = MSS;
-        //extra added variables: 
+        //extra added variables:
         br_e_had_over_e_em = jet->EhadOverEem;
-        br_tau_0 = jet->Tau[0]; 
+        br_tau_0 = jet->Tau[0];
         br_tau_1 = jet->Tau[1];
         br_tau_2 = jet->Tau[2];
 

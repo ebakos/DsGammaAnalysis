@@ -24,8 +24,8 @@ Source Delphes and ROOT before using. Type `make` for compiling. Running the pro
 
 ```
 Mode analysis, operations: event_consistency, reco
-Usage: ./bin/analyze analysis <in_file> <out_file> <operation1> [operation2]
+Usage: ./tool/bin/analyze analysis <in_file> <out_file> <operation1> [operation2]
 Mode: plot
-Usage #1: ./bin/analyze plot <in_file1> <in_file2>
-Usage #2: ./bin/analyze plot <in_file1>
+Usage #1: ./tool/bin/analyze plot <in_file1> <in_file2>
+Usage #2: ./tool/bin/analyze plot <in_file1>
 ```
