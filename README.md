@@ -1,9 +1,18 @@
 # DsGammaAnalysis
 
-This program can be used for analysing Monte-Carlo samples generated with Madraph, Pythia8 and Delphes. The code is meant for analysing e+e- -> W+W- events, where one of the W decays into DsGamma. The code is divided into routines: 
+This reposirtory containes files related to the DsGamma analysis.
+
+## EventGeneration
+
+Contains the Pythia card for signal generation and the ATLAS Delphes card for detector simulation.
+
+## AnalysisTool
+
+This program can be used for analysing Monte-Carlo samples generated with Madraph, Pythia8 and Delphes. The code is meant for analysing pp -> W events, where  the W boson decays into DsGamma. The code is divided into routines: 
 - Event consisteny
 - Reconstructed object analyzer
 - Plotter
+- Ntupler
 
 ### Event consistency:
 
@@ -17,6 +26,9 @@ This part of the program is looking for the reconstructed objects, most importan
 
 Plots the previoulsy made histograms, possibly overlays them. 
 
+### Ntuples
+
+Creates a Root TTree named `DS`, with the variables as branches used for Machine Learning. 
 
 ## Program usage: 
 
@@ -25,7 +37,12 @@ Source Delphes and ROOT before using. Type `make` for compiling. Running the pro
 ```
 Mode analysis, operations: event_consistency, reco
 Usage: ./tool/bin/analyze analysis <in_file> <out_file> <operation1> [operation2]
+Usage: ./bin/analyze analysis <in_file> <out_file> ntupler <SignalWplus,SignalWminus,BackgroundQQ,BackgroundGG>
 Mode: plot
 Usage #1: ./tool/bin/analyze plot <in_file1> <in_file2>
 Usage #2: ./tool/bin/analyze plot <in_file1>
 ```
+
+## PlotDifferences
+
+A simple root macro for plotting variables.
