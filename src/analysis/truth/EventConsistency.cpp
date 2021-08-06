@@ -164,10 +164,9 @@ TruthEventConsistency::TruthEventConsistency(ExRootTreeReader* reader) {
 
 
 
-long long TruthEventConsistency::GetDS() {
+GenParticle* TruthEventConsistency::GetDS() {
     numTruthParticles = truthParticles->GetEntriesFast();
 
-    bool event_valid = false;
     for (long long i = 0; i < numTruthParticles; ++i) {
         if (!HasPID(i, PID_PARTICLE_DSPLUS)) continue;
 
@@ -175,11 +174,11 @@ long long TruthEventConsistency::GetDS() {
         long long i_w = GetParentOfType(i, PID_PARTICLE_W);
 
         if (i_photon >= 0 && i_w >= 0) {
-            return i;
+            return (GenParticle*) truthParticles->At(i);
         }
     }
 
-    return -1;
+    return nullptr;
 }
 
 void TruthEventConsistency::ProcessEvent() {

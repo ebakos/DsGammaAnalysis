@@ -12,6 +12,9 @@
 #include "TTree.h"
 
 #define MAX_JETS 20
+#define JET_CONE 0.4
+#define JET_CONE_STEP 0.1
+#define JET_CONE_N 4 // 0.4/0.1
 
 
 class NTupler: AnalysisTool
@@ -22,8 +25,11 @@ class NTupler: AnalysisTool
     long long numJets;
     TClonesArray *jets;
 
-    long long numTruthParticles;
-    TClonesArray *truthParticles;
+    long long numTracks;
+    TClonesArray *tracks;
+
+    TClonesArray *branchTower1;
+    TClonesArray *branchTower2;
 
     TFile* file;
     TTree* tree;
@@ -34,6 +40,7 @@ class NTupler: AnalysisTool
 
     void GetBackgroundEventJets();
     void GetSignalEventJets();
+    bool PassCommonJetCuts(Jet* jet);
     
     double br_delta_eta;
     double br_delta_phi;
@@ -60,6 +67,30 @@ class NTupler: AnalysisTool
     double br_width;
     double br_mass;
     double br_track_magnitude;
+
+    //variables needed for calculation: 
+    double Qjet; //jet charge pt weighted
+    double nCharged;
+    double Rtrack; //Average dR weighted with pT
+    double Rem; // Average dR weighted with EM energy
+    double deltaR;
+    double SumRtPT;
+    double SumPT;
+
+    double z;
+    double theta;
+    double SPT;
+    double LHA;
+    double MSS;
+    double WDT;
+
+
+    std::array<double, JET_CONE_N> Econe;
+    std::array<double, JET_CONE_N> Eecone;
+    std::array<double, JET_CONE_N> Pcone;
+
+    std::array<double, JET_CONE_N> Fcore;
+    std::array<double, JET_CONE_N> Pcore;
 
   public:
     NTupler(bool signal, ExRootTreeReader*);

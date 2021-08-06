@@ -72,11 +72,14 @@ int analysis(std::string in_file, std::string out_file, std::vector<std::string>
     std::cout << "** Chain contains " << entries << " events." << std::endl;
 
     for (long long entry = 0; entry < entries; ++entry) {
+        if (entry % 1000 == 0) 
+            std::cout << "\r" << std::setfill(' ') << std::setw(12) << entry << " processed" << std::flush;
         treeReader->ReadEntry(entry);
 
         for (auto tool: tools)
             tool->ProcessEvent();
     }
+    std::cout << std::endl;
 
     for (auto tool: tools)
         tool->Finalize();

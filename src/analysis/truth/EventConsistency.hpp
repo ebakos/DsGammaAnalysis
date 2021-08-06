@@ -52,5 +52,5 @@ class TruthEventConsistency: AnalysisTool
     virtual void ProcessEvent();
     virtual void Finalize();
 
-    long long GetDS();
+    GenParticle* GetDS();
 };
