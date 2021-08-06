@@ -208,7 +208,7 @@ void PlotDifferences() {
 
         c->Update();
         std::string pdfname = output_folder + variables[v] + ".pdf";
-        c->SaveAs(pdfname.c_str());
+        //c->SaveAs(pdfname.c_str());
         std::string pngname = output_folder + variables[v] + ".png";
         c->SaveAs(pngname.c_str());
         c->Close();
