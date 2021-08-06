@@ -98,6 +98,7 @@ SysCalc:fullCutVariation = off
 !24:10:onMode=0
 !24:9:onMode=3
 
+!Settings for WplusDsGamma
 24:onMode=3  
 24:addChannel=2 1. 100 431 22
 24:10:bRatio=0.0
