@@ -1,6 +1,6 @@
 # DsGammaAnalysis
 
-This reposirtory containes files related to the DsGamma analysis.
+This repository contains files related to the DsGamma analysis.
 
 ## EventGeneration
 
