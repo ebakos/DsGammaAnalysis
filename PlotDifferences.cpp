@@ -26,17 +26,17 @@ void myText(Double_t x,Double_t y,Color_t color, const char *text) {
 
 void PlotDifferences() {
 
-    std::string output_folder  = "./variable_plots/";
+    std::string output_folder  = "./variable_plots_4sample/";
 
     std::string llable = "ATLAS, #sqrt{s} = 14 TeV";
     std::string reg_lab = "W(D_{s}, #gamma)";
 
     std::vector<std::string> legend_names = {"W(D_{s}^{-}#gamma)", "W(D_{s}^{+}#gamma)", "gg", "qq"};
 
-    std::vector<std::string> file = {"AnalysisTool/files/ntuple_wminus_ds_gamma.root",
-                                     "AnalysisTool/files/ntuple_wplus_ds_gamma.root",
-                                     "AnalysisTool/files/ntuple_gg_background.root",
-                                     "AnalysisTool/files/ntuple_qq_background.root"};
+    std::vector<std::string> file = {"AnalysisTool/files/wminus_ntuples.root",
+                                     "AnalysisTool/files/wplus_ntuples.root",
+                                     "AnalysisTool/files/gg_ntuples.root",
+                                     "AnalysisTool/files/qq_ntuples.root"};
 
     std::vector<std::string> variables = {"delta_eta", 
                                           "delta_phi",

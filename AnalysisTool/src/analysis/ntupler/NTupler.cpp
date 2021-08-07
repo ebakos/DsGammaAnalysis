@@ -227,7 +227,7 @@ void NTupler::ProcessEvent() {
 
         // transverse pT
         for (uint k = 0; k < Pcone.size(); k++)
-            Pcone[k] /= trackJet.Perp();
+            Pcone[k] /= (trackJet.Perp() + std::numeric_limits<double>::epsilon());
 
         // fcores and pcores
         for (int k = 1; k < JET_CONE_N; k++)
