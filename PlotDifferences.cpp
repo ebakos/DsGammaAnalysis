@@ -89,18 +89,18 @@ void PlotDifferences() {
                                       "#tau_{0}",
                                       "#tau_{1}",
                                       "#tau_{2}"};
-    std::vector<int> bin_number = {20, 20, 20, 5, 3, 30, 2, 20, 20, 20, 20, 10, 10, 10, 10, 10, 10, 10, 10, 20, 10, 20, 20, 10, 10};
+    std::vector<int> bin_number = {40, 40, 20, 20, 5, 30, 2, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40};
     std::vector<std::pair<double,double>> bin_boundaries= { { 0, 0.4}, 
                                                             { 0, 0.4},
                                                             { 0, 20},
-                                                            { 0, 5},
-                                                            { 0, 3}, //charge
+                                                            { 0, 20},
+                                                            { 0, 5}, //charge
                                                             { 0, 15},
                                                             { 0, 2},
-                                                            { 0, 4},
+                                                            { 0, 2},
                                                             { 0, 1},
                                                             {0, 1}, //r_em
-                                                            {0, 1}, //rTrack
+                                                            {0, 0.5}, //rTrack
                                                             {0, 1}, //f_em
                                                             {0, 1}, //pcore1
                                                             {0, 1}, //pcore2
@@ -109,7 +109,7 @@ void PlotDifferences() {
                                                             {0, 1}, //fcore3
                                                             {0, 1}, //P_T_D
                                                             {0, 1}, //LHA
-                                                            {0, 1},  //Width
+                                                            {0, 0.8},  //Width
                                                             {0, 0.5},  //Mass
                                                             {0, 10}, //m_tr
                                                             {0, 1}, //tau0
