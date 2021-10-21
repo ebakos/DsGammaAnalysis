@@ -15,6 +15,8 @@
 #define JET_CONE 0.4
 #define JET_CONE_STEP 0.1
 #define JET_CONE_N 4 // 0.4/0.1
+#define JET_IMAGE_DIM 10
+#define JET_IMAGE_R_SIZE 0.25
 
 enum class SampleType {
     SignalWplus,
@@ -74,6 +76,7 @@ class NTupler: AnalysisTool
     double br_width;
     double br_mass;
     double br_track_magnitude;
+    std::array<std::array<double, JET_IMAGE_DIM> JET_IMAGE_DIM> b_jet_image;
 
     //variables needed for calculation:
     double Qjet; //jet charge pt weighted
@@ -91,13 +94,13 @@ class NTupler: AnalysisTool
     double MSS;
     double WDT;
 
-
     std::array<double, JET_CONE_N> Econe;
     std::array<double, JET_CONE_N> Eecone;
     std::array<double, JET_CONE_N> Pcone;
 
     std::array<double, JET_CONE_N> Fcore;
     std::array<double, JET_CONE_N> Pcore;
+
 
   public:
     NTupler(std::string sample_ident, ExRootTreeReader*);
