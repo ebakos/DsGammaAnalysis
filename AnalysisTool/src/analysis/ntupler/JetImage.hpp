@@ -16,10 +16,11 @@ inline T rad_delta_phi(T phi1, T phi2) {
     return result;
 }
 
-template<size_t size>
-std::array<std::array<double, size>, size> make_jet_image(Jet *jet, double relative_eta_range, double relative_phi_range)
+void make_jet_image(Jet *jet, double relative_eta_range, double relative_phi_range, double* my_image, size_t dim)
 {
-    std::array<std::array<double, size>, size> my_image = {};
+    for(size_t x = 0; x < dim; ++x)
+        for(size_t y = 0; y < dim; ++y)
+            my_image[x * dim+y] = 0.0;
 
     for (long long j = 0; j < jet->Constituents.GetEntriesFast(); ++j) {
         TObject *object = jet->Constituents.At(j);
@@ -37,11 +38,9 @@ std::array<std::array<double, size>, size> make_jet_image(Jet *jet, double relat
             double index_phi_raw = (delta_phi + relative_phi_range) / (2.0 * relative_phi_range);
             if (index_phi_raw < 0.0 || index_phi_raw >= 1.0) continue;
 
-            my_image[(size_t)(index_eta_raw * size)][(size_t)(index_phi_raw * size)] += cell->E / std::cosh(cell->Eta) ;
+            my_image[(size_t)(index_eta_raw * dim) * dim + (size_t)(index_phi_raw * dim)] += cell->E / std::cosh(cell->Eta) ;
         }
     }
-
-    return my_image;
 }
 
 #endif
