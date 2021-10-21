@@ -76,7 +76,7 @@ class NTupler: AnalysisTool
     double br_width;
     double br_mass;
     double br_track_magnitude;
-    std::array<std::array<double, JET_IMAGE_DIM> JET_IMAGE_DIM> b_jet_image;
+    std::array<std::array<double, JET_IMAGE_DIM>, JET_IMAGE_DIM> br_jet_image;
 
     //variables needed for calculation:
     double Qjet; //jet charge pt weighted

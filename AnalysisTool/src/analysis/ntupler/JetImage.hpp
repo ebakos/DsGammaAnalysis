@@ -7,7 +7,7 @@
 
 
 template <typename T>
-inline T delta_phi(T phi1, T phi2) {
+inline T rad_delta_phi(T phi1, T phi2) {
     T result = phi1 - phi2;
     constexpr T _twopi = M_PI*2.;
     result /= _twopi;
@@ -17,10 +17,9 @@ inline T delta_phi(T phi1, T phi2) {
 }
 
 template<size_t size>
-using matrix_t = std::array<std::array<double, size>, size>
-matrix_t make_jet_image(Jet *jet, double relative_eta_range, double relative_phi_range)
+std::array<std::array<double, size>, size> make_jet_image(Jet *jet, double relative_eta_range, double relative_phi_range)
 {
-    matrix_t my_image = {};
+    std::array<std::array<double, size>, size> my_image = {};
 
     for (long long j = 0; j < jet->Constituents.GetEntriesFast(); ++j) {
         TObject *object = jet->Constituents.At(j);
@@ -31,7 +30,7 @@ matrix_t make_jet_image(Jet *jet, double relative_eta_range, double relative_phi
             Tower *cell = (Tower*) object;
 
             double delta_eta = cell->Eta - jet->Eta;
-            double delta_phi = delta_phi<double>(jet->Phi, cell->Phi);
+            double delta_phi = rad_delta_phi<double>(jet->Phi, cell->Phi);
 
             double index_eta_raw = (delta_eta + relative_eta_range) / (2.0 * relative_eta_range);
             if (index_eta_raw < 0.0 || index_eta_raw >= 1.0) continue;
