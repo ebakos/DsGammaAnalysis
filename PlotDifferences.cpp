@@ -26,17 +26,17 @@ void myText(Double_t x,Double_t y,Color_t color, const char *text) {
 
 void PlotDifferences() {
 
-    std::string output_folder  = "./variable_plots/";
+    std::string output_folder  = "./variable_plots_4sample/";
 
     std::string llable = "ATLAS, #sqrt{s} = 14 TeV";
     std::string reg_lab = "W(D_{s}, #gamma)";
 
     std::vector<std::string> legend_names = {"W(D_{s}^{-}#gamma)", "W(D_{s}^{+}#gamma)", "gg", "qq"};
 
-    std::vector<std::string> file = {"AnalysisTool/files/ntuple_wminus_ds_gamma.root",
-                                     "AnalysisTool/files/ntuple_wplus_ds_gamma.root",
-                                     "AnalysisTool/files/ntuple_gg_background.root",
-                                     "AnalysisTool/files/ntuple_qq_background.root"};
+    std::vector<std::string> file = {"AnalysisTool/files/wminus_ntuples.root",
+                                     "AnalysisTool/files/wplus_ntuples.root",
+                                     "AnalysisTool/files/gg_ntuples.root",
+                                     "AnalysisTool/files/qq_ntuples.root"};
 
     std::vector<std::string> variables = {"delta_eta", 
                                           "delta_phi",
@@ -89,18 +89,18 @@ void PlotDifferences() {
                                       "#tau_{0}",
                                       "#tau_{1}",
                                       "#tau_{2}"};
-    std::vector<int> bin_number = {20, 20, 20, 5, 3, 30, 2, 20, 20, 20, 20, 10, 10, 10, 10, 10, 10, 10, 10, 20, 10, 20, 20, 10, 10};
+    std::vector<int> bin_number = {40, 40, 20, 20, 5, 30, 2, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40};
     std::vector<std::pair<double,double>> bin_boundaries= { { 0, 0.4}, 
                                                             { 0, 0.4},
                                                             { 0, 20},
-                                                            { 0, 5},
-                                                            { 0, 3}, //charge
+                                                            { 0, 20},
+                                                            { 0, 5}, //charge
                                                             { 0, 15},
                                                             { 0, 2},
-                                                            { 0, 4},
+                                                            { 0, 2},
                                                             { 0, 1},
                                                             {0, 1}, //r_em
-                                                            {0, 1}, //rTrack
+                                                            {0, 0.5}, //rTrack
                                                             {0, 1}, //f_em
                                                             {0, 1}, //pcore1
                                                             {0, 1}, //pcore2
@@ -109,7 +109,7 @@ void PlotDifferences() {
                                                             {0, 1}, //fcore3
                                                             {0, 1}, //P_T_D
                                                             {0, 1}, //LHA
-                                                            {0, 1},  //Width
+                                                            {0, 0.8},  //Width
                                                             {0, 0.5},  //Mass
                                                             {0, 10}, //m_tr
                                                             {0, 1}, //tau0
