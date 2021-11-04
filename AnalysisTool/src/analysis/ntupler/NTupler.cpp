@@ -1,7 +1,10 @@
 #include "analysis/ntupler/NTupler.hpp"
-#include "analysis/ntupler/JetImage.hpp"
 #include <iostream>
 #include <assert.h>
+
+#ifdef __MAKECINT__
+#pragma link C++ class std::vector<std::vector<double>>+;
+#endif
 
 
 NTupler::NTupler(std::string sample_ident, ExRootTreeReader* reader) : consistency(reader) {
@@ -9,7 +12,13 @@ NTupler::NTupler(std::string sample_ident, ExRootTreeReader* reader) : consisten
     tracks = reader->UseBranch("EFlowTrack");
     branchTower1 = reader->UseBranch("EFlowPhoton");
     branchTower2 = reader->UseBranch("EFlowNeutralHadron");
+    towers = reader->UseBranch("Tower");
+    printed = 0;
 
+    for (size_t i = 0; i < JET_IMAGE_DIM; ++i) {
+        br_jet_image.push_back(std::vector<double>(JET_IMAGE_DIM, 0.0));
+    }    
+    
     tree = new TTree("DS", "DS tagger ML tuples");
     tree->Branch("delta_eta", &br_delta_eta);
     tree->Branch("delta_phi", &br_delta_phi);
@@ -36,7 +45,7 @@ NTupler::NTupler(std::string sample_ident, ExRootTreeReader* reader) : consisten
     tree->Branch("width", &br_width);
     tree->Branch("mass", &br_mass);
     tree->Branch("track_magnitude", &br_track_magnitude);
-    tree->Branch("jet_image", &br_jet_image, "D[" ## JET_IMAGE_DIM ## "][" ## JET_IMAGE_DIM ## "]");
+    tree->Branch("jet_image", &br_jet_image);
 
     if (sample_ident == "SignalWplus") {
         sample_type = SampleType::SignalWplus;
@@ -55,8 +64,8 @@ NTupler::NTupler(std::string sample_ident, ExRootTreeReader* reader) : consisten
 
 bool NTupler::PassCommonJetCuts(Jet* jet) {
     if (abs(jet->Eta) > 2.1) return false;
-    if (jet->PT < 20.0) return false;
-    if (jet->PT > 80.0) return false;
+    if (jet->PT < 30.0) return false;
+    //if (jet->PT > 80.0) return false;
     //if (jet->NCharged < 2) return false;
     return true;
 }
@@ -132,7 +141,15 @@ void NTupler::ProcessEvent() {
         MSS = 0.;
         WDT = 0.;
 
-        make_jet_image(jet, JET_IMAGE_R_SIZE, JET_IMAGE_R_SIZE, br_jet_image, JET_IMAGE_DIM);
+
+        make_jet_image(towers, jet, JET_IMAGE_R_SIZE, JET_IMAGE_R_SIZE, JET_IMAGE_DIM);
+        /*printed++;
+
+        if (printed == 20) {
+            char* a = (char*) malloc(1);
+            for(size_t i =0; i < 1000; i++)
+                *(a+i) = 'b';
+        }*/
 
         for(int i = 0; i < JET_CONE_N; ++i)
         {
@@ -273,4 +290,78 @@ void NTupler::ProcessEvent() {
 }
 
 void NTupler::Finalize() {
+}
+
+
+void NTupler::make_jet_image(TClonesArray* towers, Jet *jet, double relative_eta_range, double relative_phi_range, size_t dim)
+{
+    for(size_t x = 0; x < dim; ++x)
+        for(size_t y = 0; y < dim; ++y)
+            br_jet_image[x][y] = 0.0;
+
+    double center_eta, center_phi;
+    if (jet->NSubJetsTrimmed == 0) {
+        //std::cout << "There is no leading subjet" << std::endl;
+        center_eta = jet->Eta;
+        center_phi = jet->Phi;
+    } else {
+        //std::cout << "There is a leading subjet" << std::endl;
+        center_eta = jet->TrimmedP4[1].Eta();
+        center_phi = jet->TrimmedP4[1].Phi();
+    }
+    //std::cout << "eta: " << center_eta << " phi: " << center_phi << std::endl;
+
+    for (long long j = 0; j < towers->GetEntriesFast(); ++j) {
+        TObject *object = towers->At(j);
+
+        // Check if the constituent is accessible
+        if (object == nullptr) continue;
+        if (object->IsA() == Tower::Class()) {
+            Tower *cell = (Tower*) object;
+
+            double delta_eta = cell->Eta - center_eta;
+            double delta_phi = calc_delta_phi((double) cell->Phi, center_phi);
+
+            double index_eta_raw = (delta_eta + relative_eta_range) / (2.0 * relative_eta_range);
+            if (index_eta_raw < 0.0 || index_eta_raw >= 1.0) continue;
+            double index_phi_raw = (delta_phi + relative_phi_range) / (2.0 * relative_phi_range);
+            if (index_phi_raw < 0.0 || index_phi_raw >= 1.0) continue;
+
+            //std::cout << "tower eta: " << cell->Eta << " delta_eta: " << delta_eta << " phi: " << cell->Phi << " delta_phi: " << delta_phi << std::endl;
+            //std::cout << "      pix: " << (index_eta_raw*dim) << "       piy: " << (index_phi_raw*dim) << " Ev: " << cell->E / std::cosh(cell->Eta) << std::endl << std::endl;
+
+            br_jet_image[(size_t)(index_eta_raw * dim)][(size_t)(index_phi_raw * dim)] += cell->E / std::cosh(cell->Eta) ;
+        }
+    }
+
+    for (long long j = 0; j < jet->Constituents.GetEntriesFast(); ++j) {
+        TObject *object = jet->Constituents.At(j);
+
+        // Check if the constituent is accessible
+        if (object == nullptr) continue;
+        if (object->IsA() == Track::Class()) {
+            Track *track = (Track*) object;
+
+            double delta_eta = track->Eta - center_eta;
+            double delta_phi = calc_delta_phi((double) track->Phi, center_phi);
+
+            double index_eta_raw = (delta_eta + relative_eta_range) / (2.0 * relative_eta_range);
+            if (index_eta_raw < 0.0 || index_eta_raw >= 1.0) continue;
+            double index_phi_raw = (delta_phi + relative_phi_range) / (2.0 * relative_phi_range);
+            if (index_phi_raw < 0.0 || index_phi_raw >= 1.0) continue;
+
+            //std::cout << "tower eta: " << cell->Eta << " delta_eta: " << delta_eta << " phi: " << cell->Phi << " delta_phi: " << delta_phi << std::endl;
+            //std::cout << "      pix: " << (index_eta_raw*dim) << "       piy: " << (index_phi_raw*dim) << " Ev: " << cell->E / std::cosh(cell->Eta) << std::endl << std::endl;
+
+            if (index_eta_raw * dim >= 1.0)
+                br_jet_image[(size_t)(index_eta_raw * dim - 1)][(size_t)(index_phi_raw * dim)] += track->PT / 4.0;
+            if (index_eta_raw * dim + 1.0 < dim - 1)
+                br_jet_image[(size_t)(index_eta_raw * dim + 1)][(size_t)(index_phi_raw * dim)] += track->PT / 4.0;
+
+            if (index_phi_raw * dim >= 1.0)
+                br_jet_image[(size_t)(index_eta_raw * dim)][(size_t)(index_phi_raw * dim - 1)] += track->PT / 4.0;
+            if (index_phi_raw * dim + 1.0 < dim - 1)
+                br_jet_image[(size_t)(index_eta_raw * dim)][(size_t)(index_phi_raw * dim + 1)] += track->PT / 4.0;
+        }
+    }
 }

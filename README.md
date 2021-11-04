@@ -46,3 +46,8 @@ Usage #2: ./tool/bin/analyze plot <in_file1>
 ## PlotDifferences
 
 A simple root macro for plotting variables.
+
+
+# ml_tool
+
+A python package to do machine learning. Run `pip install ./ml_tool` to install (including dependencies). Only tested on windows (there I have a graphics card). For help with commands you can now run `ml_tool --help` and `ml_tool subcommand --help`.

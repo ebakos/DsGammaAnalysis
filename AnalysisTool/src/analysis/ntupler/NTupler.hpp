@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+#include <cmath>
+#include <iostream>
 #include "TClonesArray.h"
 #include "classes/DelphesClasses.h"
 #include "external/ExRootAnalysis/ExRootTreeReader.h"
@@ -15,8 +18,10 @@
 #define JET_CONE 0.4
 #define JET_CONE_STEP 0.1
 #define JET_CONE_N 4 // 0.4/0.1
-#define JET_IMAGE_DIM 10
-#define JET_IMAGE_R_SIZE 0.25
+
+#define JET_IMAGE_DIM 20
+#define JET_IMAGE_SIZE 400
+#define JET_IMAGE_R_SIZE 0.2
 
 enum class SampleType {
     SignalWplus,
@@ -39,6 +44,8 @@ class NTupler: AnalysisTool
 
     TClonesArray *branchTower1;
     TClonesArray *branchTower2;
+    
+    TClonesArray *towers;
 
     TFile* file;
     TTree* tree;
@@ -46,6 +53,8 @@ class NTupler: AnalysisTool
     Jet* selected_jets[MAX_JETS];
     size_t num_selected_jets;
     SampleType sample_type;
+
+    size_t printed;
 
     void GetBackgroundEventJets();
     void GetSignalEventJets();
@@ -76,7 +85,7 @@ class NTupler: AnalysisTool
     double br_width;
     double br_mass;
     double br_track_magnitude;
-    double br_jet_image[JET_IMAGE_DIM * JET_IMAGE_DIM];
+    std::vector<std::vector<double>> br_jet_image;
 
     //variables needed for calculation:
     double Qjet; //jet charge pt weighted
@@ -106,4 +115,17 @@ class NTupler: AnalysisTool
     NTupler(std::string sample_ident, ExRootTreeReader*);
     virtual void ProcessEvent();
     virtual void Finalize();
+    void make_jet_image(TClonesArray* towers, Jet *jet, double relative_eta_range, double relative_phi_range, size_t dim);
 };
+
+
+template <typename T>
+inline T calc_delta_phi(T phi1, T phi2) {
+  T result = phi1 - phi2;  // same convention as reco::deltaPhi()
+  constexpr T _twopi = M_PI*2.;
+  result /= _twopi;
+  result -= std::round(result);
+  result *= _twopi;  // result in [-pi,pi]
+  return result;
+}
+
