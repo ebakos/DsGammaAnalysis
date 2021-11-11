@@ -22,6 +22,9 @@
 #define JET_IMAGE_DIM 20
 #define JET_IMAGE_SIZE 400
 #define JET_IMAGE_R_SIZE 0.2
+#define JET_IMAGE_DIM_TRACK 0
+#define JET_IMAGE_DIM_EEM 1
+#define JET_IMAGE_DIM_EHAD 2
 
 enum class SampleType {
     SignalWplus,
@@ -44,8 +47,6 @@ class NTupler: AnalysisTool
 
     TClonesArray *branchTower1;
     TClonesArray *branchTower2;
-    
-    TClonesArray *towers;
 
     TFile* file;
     TTree* tree;
@@ -85,7 +86,7 @@ class NTupler: AnalysisTool
     double br_width;
     double br_mass;
     double br_track_magnitude;
-    std::vector<std::vector<double>> br_jet_image;
+    std::vector<std::vector<std::vector<double>>> br_jet_image;
 
     //variables needed for calculation:
     double Qjet; //jet charge pt weighted
@@ -115,7 +116,7 @@ class NTupler: AnalysisTool
     NTupler(std::string sample_ident, ExRootTreeReader*);
     virtual void ProcessEvent();
     virtual void Finalize();
-    void make_jet_image(TClonesArray* towers, Jet *jet, double relative_eta_range, double relative_phi_range, size_t dim);
+    void make_jet_image(Jet *jet, double relative_eta_range, double relative_phi_range, size_t dim);
 };
 
 
