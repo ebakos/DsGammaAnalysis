@@ -13,9 +13,10 @@ NTupler::NTupler(std::string sample_ident, ExRootTreeReader* reader) : consisten
     printed = 0;
 
     for (size_t i = 0; i < JET_IMAGE_DIM; ++i) {
-        br_jet_image.emplace_back();
         for (size_t j = 0; j < JET_IMAGE_DIM; ++j) {
-            br_jet_image[i].push_back(std::vector<double>(3, 0.0));
+            br_jet_image[i][j][0] = 0.0;
+            br_jet_image[i][j][1] = 0.0;
+            br_jet_image[i][j][2] = 0.0;
         }
     }    
     
@@ -45,7 +46,7 @@ NTupler::NTupler(std::string sample_ident, ExRootTreeReader* reader) : consisten
     tree->Branch("width", &br_width);
     tree->Branch("mass", &br_mass);
     tree->Branch("track_magnitude", &br_track_magnitude);
-    tree->Branch("jet_image", &br_jet_image);
+    tree->Branch("jet_image", br_jet_image, "br_jet_image[20][20][3]/D");
 
     if (sample_ident == "SignalWplus") {
         sample_type = SampleType::SignalWplus;

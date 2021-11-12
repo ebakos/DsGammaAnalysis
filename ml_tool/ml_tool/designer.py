@@ -33,14 +33,15 @@ def create_conv_plus_dense_model(name, conv_input_shape, dense_input_shape):
 
     conv = keras.Sequential()
     conv.add(layers.InputLayer(input_shape=conv_input_shape))
-    conv.add(layers.Conv1D(16, 5, padding="same"))
+    conv.add(layers.Conv2D(16, (3, 3)))
     conv.add(layers.Activation('relu'))
-    conv.add(layers.MaxPooling1D())
+    conv.add(layers.Conv2D(8, (3, 3)))
+    conv.add(layers.Activation('relu'))
+    conv.add(layers.MaxPooling2D())
     conv.add(layers.Flatten())
 
     combined = layers.concatenate((dense.output, conv.output))
-    x = layers.Dense(8, activation='tanh')(combined)
-    x = layers.Dense(4, activation='tanh')(combined)
+    x = layers.Dense(12, activation='tanh')(combined)
     x = layers.Dense(1, activation='sigmoid')(x)
 
     model = models.Model(inputs=[dense.input, conv.input], outputs=x)

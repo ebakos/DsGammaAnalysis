@@ -86,7 +86,7 @@ class NTupler: AnalysisTool
     double br_width;
     double br_mass;
     double br_track_magnitude;
-    std::vector<std::vector<std::vector<double>>> br_jet_image;
+    double br_jet_image[20][20][3];
 
     //variables needed for calculation:
     double Qjet; //jet charge pt weighted

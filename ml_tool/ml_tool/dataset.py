@@ -26,7 +26,7 @@ class DataSet:
     def transform(keys, data):
         keys = keys.copy()
         if 'jet_image' in keys:
-            jet_img_data = np.array([v.tolist() for v in data.arrays(['jet_image'], library='np', how=tuple)[0]])
+            jet_img_data = data['jet_image'].array(library='np')
             keys.remove('jet_image')
             otherdata = np.array(data.arrays(keys, library='np', how=tuple)).T
             return otherdata, jet_img_data
