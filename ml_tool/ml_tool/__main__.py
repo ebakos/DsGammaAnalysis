@@ -9,6 +9,7 @@ from .dataset import DataSet, BackgroundMode
 from .trainer import train, train_with_images
 from .tabulate import tabulate
 from .plotter import plot
+from .config import *
 
 
 def parse_arguments(args) -> argparse.Namespace:
@@ -18,18 +19,9 @@ def parse_arguments(args) -> argparse.Namespace:
     train_parser = subparsers.add_parser("train", help="Train ML models")
     train_parser.add_argument("-d", "--data-directory", type=str, default="data", help="Where to load data files from")
     train_parser.add_argument("-m", "--model-directory", type=str, default="models", help="Where to store model files")
-    train_parser.add_argument("-l", "--leave-one-out", action="store_true", default=False, help="Run in leave-one-out mode for feature selection.")
-    train_parser.add_argument("-i", "--images", action="store_true", default=False, help="Run with convolutional images.")
+    train_parser.add_argument("-j", "--config-file", type=str, default="default_model.json", help="json file with config options")
 
-    group = train_parser.add_mutually_exclusive_group()
-    group.add_argument("--train-qq", action='store_true', help="Train on qq only")
-    group.add_argument("--train-gg", action='store_true', help="Train on gg only")
-    group2 = train_parser.add_mutually_exclusive_group()
-    group2.add_argument("--test-qq", action='store_true', help="Test on qq only")
-    group2.add_argument("--test-gg", action='store_true', help="Test on gg only")
-
-    train_parser.add_argument("name", type=str, help="Model name")
-
+    ##plot...
     plot_parser = subparsers.add_parser("plot", help="Plot ML models")
     plot_parser.add_argument("-d", "--data-directory", type=str, default="data", help="Where to load data files from")
     plot_parser.add_argument("-m", "--model-directory", type=str, default="models", help="Where to load model files")
@@ -39,7 +31,7 @@ def parse_arguments(args) -> argparse.Namespace:
     group2 = plot_parser.add_mutually_exclusive_group()
     group2.add_argument("--test-qq", action='store_true', help="Test on qq only")
     group2.add_argument("--test-gg", action='store_true', help="Test on gg only")
-
+    ##tabulate
     tabulate_parser = subparsers.add_parser("tabulate", help="Tabulate ML models")
     tabulate_parser.add_argument("-m", "--model-directory", type=str, default="models", help="Where to load model files")
     tabulate_parser.add_argument("variable", type=str, help="Variable name")
@@ -53,31 +45,37 @@ def command(args):
         parser.print_help()
         return 1
 
+    ##train models
     if arguments.subtool == 'train':
+        ##get config file:
+        config = get_config(arguments.config_file)
+
         train_mode = BackgroundMode.Mixed
-        if arguments.train_qq:
+        if config['train_qq']:
             train_mode = BackgroundMode.QQOnly
-        elif arguments.train_gg:
+        elif config['train_gg']:
             train_mode = BackgroundMode.GGOnly
 
         test_mode = BackgroundMode.Mixed
-        if arguments.test_qq:
+        if config['test_qq']:
             test_mode = BackgroundMode.QQOnly
-        elif arguments.test_gg:
+        elif config['test_gg']:
             test_mode = BackgroundMode.GGOnly
 
         keys = DataSet.nominal_keys.copy()
-        if arguments.images:
+        
+
+        if config['run_options'] == 'conv_only' or config['run_options'] == 'dense_conv':
             keys.append('jet_image')
 
         dataset = DataSet(arguments.data_directory, train_mode, test_mode, keys)
+        train(dataset, arguments.model_directory, config)
 
-        if arguments.images:
-            train_with_images(dataset, arguments.model_directory, arguments.name)
-        else:
-            train(dataset, arguments.model_directory, arguments.name, arguments.leave_one_out)
+    ## make table
     if arguments.subtool == 'tabulate':
         tabulate(arguments.model_directory, arguments.variable)
+    
+    ##plot models
     if arguments.subtool == 'plot':
         train_mode = BackgroundMode.Mixed
         test_mode = BackgroundMode.Mixed
@@ -87,7 +85,7 @@ def command(args):
             test_mode = BackgroundMode.GGOnly
 
         keys = DataSet.nominal_keys.copy()
-        if arguments.images:
+        if arguments.run_options = "conv_only" or arguments.run_options = "dense_conv":
             keys.append('jet_image')
 
         dataset = DataSet(arguments.data_directory, train_mode, test_mode, keys)

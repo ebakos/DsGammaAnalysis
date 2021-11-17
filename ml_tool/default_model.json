@@ -1,0 +1,61 @@
+/* This is the default setting for model training            */
+/* If you want to run with different settings, change here,  */
+/* or create your own json file with your own settings,      */
+/* annd pass it to the command line of the tool.             */ 
+/* DO NOT DELETE!!!                                          */
+
+{
+    //Overall config for training:
+    "model_name" : "random_model",
+    "batch_size" : 1024,
+    "training_epochs" : 40,
+    "run_options" : "dense_only", //dense_only, leave_one_out, conv_only, dense_conv
+    "train_qq" : false,
+    "train_gg" : false,
+    "test_qq": false,
+    "test_gg" : false,
+
+    // dense_only config:
+
+    //First layer
+    "layer1_nodes" : 15,
+    "layer1_activation" : "tanh", //relu, softmax
+    "layer1_dropout" : false,
+    "layer1_dropout_nodes" : 3,
+    "layer2" : false,
+    "layer2_nodes" : 10,
+    "layer2_activation" : "tanh",
+    "layer2_dropout" : false,
+    "layer2_dropout_nodes" : 3,
+    "layer3" : false,
+    "layer3_nodes" : 10,
+    "layer3_activation" : "tanh",
+    "layer3_dropout" : false,
+    "layer3_dropout_nodes" : 3,
+    "layer_use_sigmoids" : true,
+
+    // leave_one_out config: 
+    "excluded_keys" : ["p_core_1", "p_core_2"],
+
+    //convolutional only: 
+    "conv_layer1_nodes" : [16, 3, 3],
+    "conv_layer1_activation" : "relu",
+    "conv_layer1_maxpooling" : true,
+    "conv_layer2" : false,
+    "conv_layer2_nodes" : [8, 3, 3],
+    "conv_layer2_activation" : "relu",
+    "conv_layer2_maxpooling" : false,
+    "conv_layer3" : false,
+    "conv_layer3_nodes" : [5, 3, 3],
+    "conv_layer3_activation" : "relu",
+    "conv_layer3_maxpooling" : false,
+    "conv_dense": true, //add dense layer end of the convolutional -> keep this false for combined
+    "conv_denselayer_nodes": 15,
+    "conv_denselayer_activation": "relu",
+    "conv_use_sigmoid": true, // -> keep this false for combined
+
+    //combined dense layers: 
+    "comb_denselayer_nodes": 15,
+    "comb_denselayer_activation": "relu",
+    "comb_use_sigmoid": true
+}
