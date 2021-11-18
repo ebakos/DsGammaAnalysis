@@ -27,14 +27,14 @@ def trainer(model: Model, dataset: DataSet, config):
 def train(dataset: DataSet, model_directory, config):
     
     ## Dense only
-    if config['run_options'] = 'dense_only': 
+    if config['run_options'] == 'dense_only': 
         layers = create_dense_layers(config)
         model = create_model(config['model_name'], layers, len(dataset.keys()))
         trainer(model, dataset, config)
         model.save(model_directory)
 
     ## Leave one or group out
-    elif config['run_options'] = 'leave_one_out':
+    elif config['run_options'] == 'leave_one_out':
         keys = dataset.keys().copy()
         #create layers
         layers = create_dense_layers(config)
@@ -48,14 +48,14 @@ def train(dataset: DataSet, model_directory, config):
         model.save(model_directory)
 
     ## run with convolutional only:
-    elif config['run_options'] = 'conv_only':
+    elif config['run_options'] == 'conv_only':
         layers = create_conv_layers(config)
         model = create_conv_model(config['model_name'], layers, dataset.image_dimensions())
         trainer(model, dataset,config)
         model.save(model_directory)
 
     ## run with combined model: Dense + Convoltutional
-    elif config['run_options'] = 'dense_conv':
+    elif config['run_options'] == 'dense_conv':
         dense_layers = create_dense_layers(config)
         conv_layers = create_conv_layers(config)
         model = create_conv_plus_dense_model(config, len(dataset.keys()) - 1, dataset.image_dimensions(), dense_layers, conv_layers)
