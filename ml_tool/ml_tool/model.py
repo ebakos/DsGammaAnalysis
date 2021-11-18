@@ -10,7 +10,7 @@ from tensorflow import keras
 class Model:
     model: keras.Model
     name: str
-    metadata: Dict[str, Union[str, int, bool]]
+    metadata: Dict[str, Union[str, int, bool, list]]
 
     def save(self, directory) -> None:
         self.model.save(str(Path(directory).resolve() / self.name))

@@ -31,6 +31,7 @@ def parse_arguments(args) -> argparse.Namespace:
     group2 = plot_parser.add_mutually_exclusive_group()
     group2.add_argument("--test-qq", action='store_true', help="Test on qq only")
     group2.add_argument("--test-gg", action='store_true', help="Test on gg only")
+    
     ##tabulate
     tabulate_parser = subparsers.add_parser("tabulate", help="Tabulate ML models")
     tabulate_parser.add_argument("-m", "--model-directory", type=str, default="models", help="Where to load model files")

@@ -1,8 +1,9 @@
+from pathlib import Path
 from json import *
 
 def get_config(json_file_name):
     #this function returns the temporary configurations
-    with open('default_model.json') as f_def:
+    with open(Path(__file__).resolve().parent / 'default_model.json') as f_def:
         temp_config = json.load(f_def)
 
     if json_file_name != 'default_model.json':
