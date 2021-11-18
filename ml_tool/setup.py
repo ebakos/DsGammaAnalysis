@@ -7,7 +7,7 @@ setup(
     description="ML processes for W->DS+Gamma",
     author="Evelin Bakos",
     packages=['ml_tool'],
-    package_data={'ml_tool': ['ml_tool/*.json']},
+    package_data={'ml_tool': ["default_model.json"]},
     entry_points={
         'console_scripts': [
             'ml_tool=ml_tool:main'

@@ -8,22 +8,23 @@ import numpy as np
 
 
 def plot(model_directory, plot_directory, dataset: DataSet):
-    test_x, test_y = dataset.test_data()
-    bsel = np.where(test_y == 0)
-    ssel = np.where(test_y == 1)
-
-    if type(test_x) == list:
-        bkgdata = [test_x[0][bsel], test_x[1][bsel]]
-        sigdata = [test_x[0][ssel], test_x[1][ssel]]
-    else:
-        bkgdata = test_x[bsel]
-        sigdata = test_x[ssel]
-    
     fig, ax = plt.subplots()
 
     ax.plot([0, 1], [0, 1], 'k--')
     models = Model.load_multi(model_directory)
     for model in models:
+        dataset.reset_keys(model.metadata["keys"])
+        test_x, test_y = dataset.test_data()
+        bsel = np.where(test_y == 0)
+        ssel = np.where(test_y == 1)
+
+        if type(test_x) == list:
+            bkgdata = [test_x[0][bsel], test_x[1][bsel]]
+            sigdata = [test_x[0][ssel], test_x[1][ssel]]
+        else:
+            bkgdata = test_x[bsel]
+            sigdata = test_x[ssel]
+
         score = model.model.evaluate(x=test_x, y=test_y, batch_size=model.metadata['batch_size'], verbose=0)
 
         # ROC draw

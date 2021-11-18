@@ -28,6 +28,9 @@ class DataSet:
         if 'jet_image' in keys:
             jet_img_data = data['jet_image'].array(library='np')
             keys.remove('jet_image')
+            if not keys:
+                return jet_img_data
+
             otherdata = np.array(data.arrays(keys, library='np', how=tuple)).T
             return otherdata, jet_img_data
         return np.array(data.arrays(keys, library='np', how=tuple)).T
@@ -85,7 +88,7 @@ class DataSet:
 
     def reset_keys(self, keys):
         self._keys = keys.copy()
-        if 'jet_image' in self._keys:
+        if 'jet_image' in self._keys and len(self._keys) > 1:
             self._preload_data_with_image()
         else:
             self._preload_data()
@@ -115,7 +118,7 @@ class DataSet:
         return [ds_d, ds_i], ds_l
 
     def train_data(self):
-        if 'jet_image' in self._keys:
+        if 'jet_image' in self._keys and len(self._keys) > 1:
             if self.train_mode == BackgroundMode.Mixed:
                 return self._dataset_withimage(
                     bkgs=[self.gg_data_train, self.qq_data_train],
@@ -156,7 +159,7 @@ class DataSet:
             raise Exception("Invalid train mode")
 
     def test_data(self):
-        if 'jet_image' in self._keys:
+        if 'jet_image' in self._keys and len(self._keys) > 1:
             if self.test_mode == BackgroundMode.Mixed:
                 return self._dataset_withimage(
                     bkgs=[self.gg_data_test, self.qq_data_test],

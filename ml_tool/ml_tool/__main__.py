@@ -6,10 +6,10 @@ tf.get_logger().setLevel('ERROR') # shhhhh
 import sys
 
 from .dataset import DataSet, BackgroundMode
-from .trainer import train, train_with_images
+from .trainer import train
 from .tabulate import tabulate
 from .plotter import plot
-from .config import *
+from .config import get_configs
 
 
 def parse_arguments(args) -> argparse.Namespace:
@@ -31,7 +31,7 @@ def parse_arguments(args) -> argparse.Namespace:
     group2 = plot_parser.add_mutually_exclusive_group()
     group2.add_argument("--test-qq", action='store_true', help="Test on qq only")
     group2.add_argument("--test-gg", action='store_true', help="Test on gg only")
-    
+
     ##tabulate
     tabulate_parser = subparsers.add_parser("tabulate", help="Tabulate ML models")
     tabulate_parser.add_argument("-m", "--model-directory", type=str, default="models", help="Where to load model files")
@@ -49,33 +49,31 @@ def command(args):
     ##train models
     if arguments.subtool == 'train':
         ##get config file:
-        config = get_config(arguments.config_file)
+        for config in get_configs(arguments.config_file):
+            train_mode = BackgroundMode.Mixed
+            if config['train_qq']:
+                train_mode = BackgroundMode.QQOnly
+            elif config['train_gg']:
+                train_mode = BackgroundMode.GGOnly
 
-        train_mode = BackgroundMode.Mixed
-        if config['train_qq']:
-            train_mode = BackgroundMode.QQOnly
-        elif config['train_gg']:
-            train_mode = BackgroundMode.GGOnly
+            test_mode = BackgroundMode.Mixed
+            if config['test_qq']:
+                test_mode = BackgroundMode.QQOnly
+            elif config['test_gg']:
+                test_mode = BackgroundMode.GGOnly
 
-        test_mode = BackgroundMode.Mixed
-        if config['test_qq']:
-            test_mode = BackgroundMode.QQOnly
-        elif config['test_gg']:
-            test_mode = BackgroundMode.GGOnly
+            keys = DataSet.nominal_keys.copy()
 
-        keys = DataSet.nominal_keys.copy()
-        
+            if config['run_options'] == 'conv_only' or config['run_options'] == 'dense_conv':
+                keys.append('jet_image')
 
-        if config['run_options'] == 'conv_only' or config['run_options'] == 'dense_conv':
-            keys.append('jet_image')
-
-        dataset = DataSet(arguments.data_directory, train_mode, test_mode, keys)
-        train(dataset, arguments.model_directory, config)
+            dataset = DataSet(arguments.data_directory, train_mode, test_mode, keys)
+            train(dataset, arguments.model_directory, config)
 
     ## make table
     if arguments.subtool == 'tabulate':
         tabulate(arguments.model_directory, arguments.variable)
-    
+
     ##plot models
     if arguments.subtool == 'plot':
         train_mode = BackgroundMode.Mixed
@@ -85,11 +83,7 @@ def command(args):
         elif arguments.test_gg:
             test_mode = BackgroundMode.GGOnly
 
-        keys = DataSet.nominal_keys.copy()
-        if arguments.run_options = "conv_only" or arguments.run_options = "dense_conv":
-            keys.append('jet_image')
-
-        dataset = DataSet(arguments.data_directory, train_mode, test_mode, keys)
+        dataset = DataSet(arguments.data_directory, train_mode, test_mode)
         modeldir = Path(arguments.model_directory).resolve()
         plotdir = Path(arguments.plot_directory).resolve()
         plot(modeldir, plotdir, dataset)
