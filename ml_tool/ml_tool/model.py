@@ -30,4 +30,11 @@ class Model:
     def load_multi(cls, directory) -> List['Model']:
         return [cls.load(file) for file in Path(directory).resolve().glob("*")]
 
+    @classmethod
+    def load_multi_meta_only(cls, directory) -> List['Model']:
+        return [Model(
+            model=None,
+            **json.loads((file / ".custom.metadata.json").read_text())
+        ) for file in Path(directory).resolve().glob("*")]
+
 

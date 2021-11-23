@@ -1,15 +1,8 @@
-import argparse
-import tensorflow as tf
-from pathlib import Path
-tf.get_logger().setLevel('ERROR') # shhhhh
-
 import sys
+import argparse
+from pathlib import Path
 
 from .dataset import DataSet, BackgroundMode
-from .trainer import train
-from .tabulate import tabulate
-from .plotter import plot
-from .config import get_configs
 
 
 def parse_arguments(args) -> argparse.Namespace:
@@ -32,6 +25,16 @@ def parse_arguments(args) -> argparse.Namespace:
     group2.add_argument("--test-qq", action='store_true', help="Test on qq only")
     group2.add_argument("--test-gg", action='store_true', help="Test on gg only")
 
+    ##compariplot...
+    compariplot = subparsers.add_parser("compariplot", help="Make an overview of models as a seaborn swarmplot")
+    compariplot.add_argument("-m", "--model-directory", type=str, default="models", help="Where to load model files")
+    compariplot.add_argument("-p", "--plot-directory", type=str, default="plots", help="Where to store plot images")
+    compariplot.add_argument("-r", "--range", type=float, nargs=2, default=None, help="Y-axis range")
+    compariplot.add_argument("-c", "--constraint", action='append', type=str, nargs=2, help="constraints on variables")
+    compariplot.add_argument("category", type=str, help="Category for the X axis")
+    compariplot.add_argument("variable", type=str, help="Variable out of metadata which to put on the Y axis")
+    compariplot.add_argument("-o", "--color-category", type=str, help="colour of points category")
+
     ##tabulate
     tabulate_parser = subparsers.add_parser("tabulate", help="Tabulate ML models")
     tabulate_parser.add_argument("-m", "--model-directory", type=str, default="models", help="Where to load model files")
@@ -48,6 +51,9 @@ def command(args):
 
     ##train models
     if arguments.subtool == 'train':
+        from .trainer import train
+        from .config import get_configs
+
         ##get config file:
         for config in get_configs(arguments.config_file):
             train_mode = BackgroundMode.Mixed
@@ -72,10 +78,12 @@ def command(args):
 
     ## make table
     if arguments.subtool == 'tabulate':
+        from .tabulate import tabulate
         tabulate(arguments.model_directory, arguments.variable)
 
     ##plot models
     if arguments.subtool == 'plot':
+        from .plotter import plot
         train_mode = BackgroundMode.Mixed
         test_mode = BackgroundMode.Mixed
         if arguments.test_qq:
@@ -87,6 +95,19 @@ def command(args):
         modeldir = Path(arguments.model_directory).resolve()
         plotdir = Path(arguments.plot_directory).resolve()
         plot(modeldir, plotdir, dataset)
+
+    ##compariplot models
+    if arguments.subtool == "compariplot":
+        from .compariplot import compariplot
+        compariplot(
+            arguments.model_directory,
+            arguments.plot_directory,
+            arguments.range,
+            arguments.constraint,
+            arguments.category,
+            arguments.variable,
+            arguments.color_category
+        )
 
 
 def main():

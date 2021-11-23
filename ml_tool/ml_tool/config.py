@@ -2,6 +2,7 @@ import itertools
 from pathlib import Path
 import itertools
 import json
+from typing import Type
 
 
 def get_configs(json_file_name):
@@ -11,7 +12,10 @@ def get_configs(json_file_name):
 
     if json_file_name != 'default_model.json':
         with open(json_file_name) as f:
-            temp_config.update(json.load(f))
+            for k,v in json.load(f).items():
+                if k not in temp_config:
+                    raise ValueError(f"'{k}' as specified in your config {json_file_name} is not a valid config parameter.")
+                temp_config[k] = v
 
     list_fields = ["excluded_keys", "conv_layer1_nodes", "conv_layer2_nodes", "conv_layer3_nodes"]
     noncombinators = {}

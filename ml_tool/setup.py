@@ -10,7 +10,7 @@ setup(
     package_data={'ml_tool': ["default_model.json"]},
     entry_points={
         'console_scripts': [
-            'ml_tool=ml_tool:main'
+            'ml_tool=ml_tool:__main__.main'
         ]
     },
     install_requires=[
@@ -18,7 +18,9 @@ setup(
         "matplotlib",
         "tensorflow",
         "uproot",
-        "sklearn"
+        "sklearn",
+        "pandas",
+        "seaborn"
     ],
     zip_safe=False
 )
