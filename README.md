@@ -134,10 +134,9 @@ To run multiple models at once, it is possible to define every argument as a lis
     "layer1_activation" : ["tanh", "relu"],
     "layer1_dropout" : [false, true],
     "layer1_dropout_nodes" : 0.2,
-    "layer_use_sigmoids" : [false, true]
 }
 ```
-This config file will configure and the program will run 3x2x2x2 = 24  models. In case, the argument is a list (for example `excluded_keys`) one needs to define a list of a list. In this case an integer will be placed next to the model name. The model parameters, together with the list of the keys (variables) used, the accuracy, loss and the model configuration is saved into a metadata file within the model directory. 
+This config file will configure and the program will run 3x2x2 = 12  models. In case, the argument is a list (for example `excluded_keys`) one needs to define a list of a list. In this case an integer will be placed next to the model name. The model parameters, together with the list of the keys (variables) used, the accuracy, loss and the model configuration is saved into a metadata file within the model directory. 
 This metadata is used for plotting.
 
 ### Plot:
