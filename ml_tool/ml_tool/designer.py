@@ -20,8 +20,7 @@ def create_dense_layers(config):
         return_layers.append(layers.Dense(config['layer3_nodes'], activation=config['layer3_activation']))
     if config['layer3_dropout']:
         return_layers.append(layers.Dropout(config['layer3_dropout_nodes']))
-    if config['layer_use_sigmoid']:
-        return_layers.append(layers.Dense(1, activation='sigmoid'))
+    return_layers.append(layers.Dense(1, activation=config['layer_output_activation']))
     return return_layers
     
 #This is needed to create model from the layers above
@@ -54,8 +53,7 @@ def create_conv_layers(config):
     # Dense layers to finish the convoutional model:
     if config['conv_dense']:
         return_layers.append(layers.Dense(config['conv_denselayer_nodes'], activation=config['conv_denselayer_activation']))
-    if config['conv_use_sigmoid']:
-        return_layers.append(layers.Dense(1, activation='sigmoid'))
+    return_layers.append(layers.Dense(1, config['conv_output_activation']))
     return return_layers
 
 #This is needed to create model from the layers above
@@ -79,8 +77,7 @@ def create_conv_plus_dense_model(config, dense_input_shape, conv_input_shape, de
 
     combined = layers.concatenate((dense.output, conv.output))
     x = layers.Dense(config['comb_denselayer_nodes'], activation=config['comb_denselayer_activation'])(combined)
-    if config['comb_use_sigmoid']:
-        x = layers.Dense(1, activation='sigmoid')(x)
+    x = layers.Dense(1, activation=config['comb_output_activation'])(x)
 
     model = models.Model(inputs=[dense.input, conv.input], outputs=x)
     model.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])

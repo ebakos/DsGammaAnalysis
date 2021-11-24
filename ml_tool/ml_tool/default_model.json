@@ -22,7 +22,7 @@
     "layer3_activation" : "tanh",
     "layer3_dropout" : false,
     "layer3_dropout_nodes" : 3,
-    "layer_use_sigmoid" : true,
+    "layer_output_activation" : "sigmoid",
 
     "excluded_keys" : ["p_core_1", "p_core_2"],
 
@@ -40,9 +40,9 @@
     "conv_dense": true,
     "conv_denselayer_nodes": 15,
     "conv_denselayer_activation": "relu",
-    "conv_use_sigmoid": true,
+    "conv_output_activation": "sigmoid",
 
     "comb_denselayer_nodes": 15,
     "comb_denselayer_activation": "relu",
-    "comb_use_sigmoid": true
+    "comb_output_activation": "sigmoid"
 }
