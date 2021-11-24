@@ -67,6 +67,7 @@ To run type `ml_tool` with the arguments:
 If no `.json` file provided, the `default_model.json` will be used.
 
 **Contents of the `.json` config file: 
+
 *Common run settings:*
 - `model_name`: name of the models
 - `batch_size`: training batch size
@@ -76,6 +77,7 @@ If no `.json` file provided, the `default_model.json` will be used.
 - `train_gg`: train only on gg sample
 - `test_qq`: test only with qq sample
 - `test_gg`: test only with gg sample
+
 *Dense model settings:*
 Setup for dense model, up to 3 layers.
 - `layer1_nodes`: layer nodes in layer 1
@@ -92,10 +94,12 @@ Setup for dense model, up to 3 layers.
 - `layer3_activation`: layer 3 activation functions: `tanh`, `relu`, `softmax` etc.
 - `layer3_dropout`: use droput layer after layer 3, if set to `false`, rest of the dropout layer parameters ignored
 - `layer3_dropout_nodes`: dropout rate
-- `layer_output_ctivation`: `simoid`,`tanh`, `relu`, `softmax` etc.
+- `layer_output_activation`: `simoid`,`tanh`, `relu`, `softmax` etc.
+
 *Leave-one-out model settings:* 
 With this run option, it is possible to leave one ore more parameter out of the dense model training. The dense model setup is the same as it is defined above.
 - `excluded_keys`: list of parameters which will be left out from the training. Can be one or more parameter, like: `["p_core_1", "p_core_2"]`
+
 *Convolutional model settings:*
 Setup for convolutional model, up to 3 layers.
 - `conv_layer1_nodes`: layer nodes in layer 3, where the first number is the number of filters, the seond and third number is the kernel size: `[16, 3, 3]`
@@ -112,12 +116,13 @@ Setup for convolutional model, up to 3 layers.
 - `conv_dense`: if set to `true`, a dense layer is added in the end of the convolutional layers. Note: Turn this to `false` if running with combined mode!
 - `conv_denselayer_nodes`: Number of nodes in the dense layer.
 - `conv_denselayer_activation`: dense layer activation functions: `tanh`, `relu`, `softmax` etc.
-- `conv_output_ctivation`: `simoid`,`tanh`, `relu`, `softmax` etc.
+- `conv_output_activation`: `simoid`,`tanh`, `relu`, `softmax` etc.
+
 *Combined model settings:*
 This model takes the dense model defined above and the convolutional model defined above, and combines them. The combined layer settings can be set up with the parameters below. These layers takes the output of the dense and convolutional model as the input, and combines them to a single output.
 - `comb_denselayer_nodes`: dense layers nodes. This dense layer takes the output of the previous models as input.
 - `comb_denselayer_activation`: dense layer activation functions: `tanh`, `relu`, `softmax` etc.
-- `comb_output_ctivation`: `simoid`,`tanh`, `relu`, `softmax` etc.
+- `comb_output_activation`: `simoid`,`tanh`, `relu`, `softmax` etc.
 
 To run multiple models at once, it is possible to define every argument as a list, for example: 
 ```
