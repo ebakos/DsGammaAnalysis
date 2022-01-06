@@ -65,7 +65,7 @@ NTupler::NTupler(std::string sample_ident, ExRootTreeReader* reader) : consisten
 
 bool NTupler::PassCommonJetCuts(Jet* jet) {
     if (abs(jet->Eta) > 2.1) return false;
-    if (jet->PT < 30.0) return false;
+    if (jet->PT < 25.0) return false;
     //if (jet->PT > 80.0) return false;
     //if (jet->NCharged < 2) return false;
     return true;

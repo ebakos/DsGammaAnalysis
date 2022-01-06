@@ -51,7 +51,7 @@ void RecoAnalysis::ProcessEvent() {
     for (long long i = 0; i < numJets; ++i) {
         Jet *jet = (Jet*) jets->At(i);
         //premature jet selection
-        if (jet->PT < 20.) continue;
+        if (jet->PT < 25.) continue;
         v_jets.push_back(jet->P4());
     }
 
