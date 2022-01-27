@@ -11,7 +11,7 @@ RecoAnalysis::RecoAnalysis(ExRootTreeReader* reader) {
     met = reader->UseBranch("MissingET");
 
     reco_photon_n = new TH1D("reco_photon_n", "Reconstructed Photon multiplicity", 5, 0., 5.);
-    reco_jet_n = new TH1D("reco_jet_n", "Reconstructed Jet multiplicity", 5, 0., 5.);
+    reco_jet_n = new TH1D("reco_jet_n", "Reconstructed Jet multiplicity", 15, 0., 15.);
     reco_electron_n = new TH1D("reco_electron_n", "Reconstructed Electron multiplicity", 5, 0., 5.);
     reco_muon_n = new TH1D("reco_muon_n", "Reconstructed Muon multiplicity", 5, 0., 5.);
 

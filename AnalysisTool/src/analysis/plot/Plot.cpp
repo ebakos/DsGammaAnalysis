@@ -14,7 +14,7 @@ void Plotter::myText(Double_t x,Double_t y,Color_t color, const char *text) {
 
 Plotter::Plotter(std::vector<std::string> input_files) : input_files(input_files) {
 
-    llable = "ATLAS, #sqrt{s} = 14 TeV";
+    llable = "ATLAS, #sqrt{s} = 13.6 TeV";
     reg_lab = "W(D_{s}, #gamma)";
 
     //plots to plot
@@ -93,11 +93,11 @@ void Plotter::ProcessFiles(){
         myhist1->SetTitle("");
         myhist1->GetXaxis()->SetTitle(titles[i].c_str());
         myhist1->GetYaxis()->SetTitle("Events");
-        if (input_files[0] == "WminusPlots.root") legend->AddEntry(myhist1, "W^{-}(Ds, #gamma)", "l");
-        else if (input_files[0] == "WplusPlots.root") legend->AddEntry(myhist1, "W^{+}(Ds, #gamma)", "l");
+        if (input_files[0] == "wm_reco.root") legend->AddEntry(myhist1, "W^{-}(Ds, #gamma)", "l");
+        else if (input_files[0] == "wp_reco.root") legend->AddEntry(myhist1, "W^{+}(Ds, #gamma)", "l");
         else if (input_files[0] == "signal_plots.root") legend->AddEntry(myhist1, "W(Ds, #gamma)", "l");
         else if (input_files[0] == "background_plots.root") legend->AddEntry(myhist1, "Background", "l");
-        else legend->AddEntry(myhist2, input_files[0].c_str(), "l");
+        else  legend->AddEntry(myhist1, "W^{+}(Ds, #gamma)", "l");
         
         myhist1->SetMaximum(1.5*myhist1->GetMaximum());
 
@@ -110,14 +110,14 @@ void Plotter::ProcessFiles(){
             myhist2->SetTitle("");
             myhist2->GetXaxis()->SetTitle(titles[i].c_str());
             myhist2->GetYaxis()->SetTitle("Events");
-            if (input_files[1] == "WminusPlots.root") legend->AddEntry(myhist2, "W^{-}(Ds, #gamma)", "l");
-            else if (input_files[1] == "WplusPlots.root") legend->AddEntry(myhist2, "W^{+}(Ds, #gamma)", "l");
+            if (input_files[1] == "wm_reco.root") legend->AddEntry(myhist2, "W^{-}(Ds, #gamma)", "l");
+            else if (input_files[1] == "wp_reco.root") legend->AddEntry(myhist2, "W^{+}(Ds, #gamma)", "l");
             else if (input_files[1] == "signal_plots.root") legend->AddEntry(myhist2, "W(Ds, #gamma)", "l");
             else if (input_files[1] == "background_plots.root") legend->AddEntry(myhist2, "Background", "l");
-            else legend->AddEntry(myhist2, input_files[1].c_str(), "l");
+            else legend->AddEntry(myhist2, "W^{-}(Ds, #gamma)", "l");
         }
 
-        TCanvas *c = new TCanvas("plot", "plot", 800, 600);
+        TCanvas *c = new TCanvas(variables[i].c_str(), variables[i].c_str(), 800, 600);
         gStyle->SetOptStat(0);
         c->SetLeftMargin(0.15);
 

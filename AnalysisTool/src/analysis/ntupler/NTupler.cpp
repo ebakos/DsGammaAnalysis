@@ -11,6 +11,7 @@ NTupler::NTupler(std::string sample_ident, ExRootTreeReader* reader) : consisten
     branchTower1 = reader->UseBranch("EFlowPhoton");
     branchTower2 = reader->UseBranch("EFlowNeutralHadron");
     printed = 0;
+    number_of_processed_jets = 0;
 
     for (size_t i = 0; i < JET_IMAGE_DIM; ++i) {
         for (size_t j = 0; j < JET_IMAGE_DIM; ++j) {
@@ -72,7 +73,6 @@ bool NTupler::PassCommonJetCuts(Jet* jet) {
 }
 
 void NTupler::GetSignalEventJets() {
-    num_selected_jets = 0;
     numJets = jets->GetEntriesFast();
 
     GenParticle* ds = consistency.GetDS();
@@ -94,12 +94,10 @@ void NTupler::GetSignalEventJets() {
 
     if (mini == -1) return;
 
-    selected_jets[0] = (Jet*) jets->At(mini);
-    num_selected_jets = 1;
+    selected_jets.push_back((Jet*) jets->At(mini));
 }
 
 void NTupler::GetBackgroundEventJets() {
-    num_selected_jets = 0;
     numJets = jets->GetEntriesFast();
 
     for (long long i = 0; i < numJets; ++i) {
@@ -111,22 +109,27 @@ void NTupler::GetBackgroundEventJets() {
             (sample_type == SampleType::BackgroundGG && jet->Flavor == 21) ||
             (sample_type == SampleType::BackgroundQQ && (jet->Flavor > 0 && jet->Flavor < 6))
         ){
-            selected_jets[num_selected_jets++] = jet;
+            selected_jets.push_back(jet);
         }
     }
 }
 
 void NTupler::ProcessEvent() {
     numTracks = tracks->GetEntriesFast();
+    selected_jets.clear();
 
     if (sample_type == SampleType::SignalWplus || sample_type == SampleType::SignalWminus) {
         GetSignalEventJets();
     } else {
         GetBackgroundEventJets();
     }
+    
+    for (size_t i = 0; i < selected_jets.size(); ++i) {
+        Jet *jet = selected_jets.at(i);
 
-    for (size_t i = 0; i < num_selected_jets; ++i) {
-        Jet *jet = selected_jets[i];
+        number_of_processed_jets++;
+        //reached max number of jets: 
+        if (number_of_processed_jets > MAX_PROCESSED_JETS) continue;
 
         Qjet = 0., //jet charge pt weighted
         nCharged = 0;
@@ -152,13 +155,13 @@ void NTupler::ProcessEvent() {
                 *(a+i) = 'b';
         }*/
 
-        for(int i = 0; i < JET_CONE_N; ++i)
+        for(int j = 0; j < JET_CONE_N; ++j)
         {
-            Eecone[i] = 0.0;
-            Econe[i] = 0.0;
-            Pcone[i] = 0.0;
-            Fcore[i] = 0.0;
-            Pcore[i] = 0.0;
+            Eecone[j] = 0.0;
+            Econe[j] = 0.0;
+            Pcone[j] = 0.0;
+            Fcore[j] = 0.0;
+            Pcore[j] = 0.0;
         }
 
         TLorentzVector trackJet, jetMomentum = jet->P4();

@@ -18,7 +18,9 @@ class TruthEventConsistency: AnalysisTool
 {
   private:
     long long numTruthParticles;
+    long long numGenJets;
     TClonesArray *truthParticles;
+    TClonesArray *genJets;
 
     TH1D* w_energy;
     TH1D* w_pt;
@@ -34,6 +36,13 @@ class TruthEventConsistency: AnalysisTool
     TH1D* delta_eta_ds_gamma;
     TH1D* delta_r_ds_gamma;
     TH2D* delta_ds_gamma;
+
+    //TH1D* jet_n;
+    //TH1D* jet_delta_r;
+    //TH1D* jet_delta_phi;
+    //TH1D* jet_delta_eta; 
+    //TH1D* jet_width_phi;
+    //TH1D* jet_width_eta; 
 
     unsigned long long valid_events;
     unsigned long long invalid_events;

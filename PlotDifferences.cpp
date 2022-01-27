@@ -26,17 +26,18 @@ void myText(Double_t x,Double_t y,Color_t color, const char *text) {
 
 void PlotDifferences() {
 
-    std::string output_folder  = "./variable_plots_4sample/";
+    std::string output_folder  = "./sample_plots_PU_qq/";
 
-    std::string llable = "ATLAS, #sqrt{s} = 14 TeV";
+    std::string llable = "ATLAS, #sqrt{s} = 13.6 TeV";
     std::string reg_lab = "W(D_{s}, #gamma)";
 
-    std::vector<std::string> legend_names = {"W(D_{s}^{-}#gamma)", "W(D_{s}^{+}#gamma)", "gg", "qq"};
+    std::vector<std::string> legend_names = {/*"W(D_{s}#gamma)", "W(D_{s}^{+}#gamma)",*/ "qq", "qq+PU"};
 
-    std::vector<std::string> file = {"AnalysisTool/files/wminus_ntuples.root",
-                                     "AnalysisTool/files/wplus_ntuples.root",
-                                     "AnalysisTool/files/gg_ntuples.root",
-                                     "AnalysisTool/files/qq_ntuples.root"};
+    std::vector<std::string> file = {/*"delphes_files/signal.root",*/
+                                     /*"AnalysisTool/files/wplus_ntuples.root",*/
+                                     "delphes_files/qq_ntuples.root",
+                                     "delphes_files/qq_PU_ntuple.root"};
+                                     //"delphes_files/qq_ntuples.root"};
 
     std::vector<std::string> variables = {"delta_eta", 
                                           "delta_phi",
@@ -176,16 +177,28 @@ void PlotDifferences() {
             }
         }
 
-        std::vector<double> colors = {632, 600, 807, 419};
+        std::vector<double> colors = {632, 600, 419, 807};
 
         for (int h = 0; h < hists.size(); h++)
         {
             hists[h]->SetLineColor(colors[h]);
             hists[h]->SetLineWidth(2);
-            hists[h]->GetYaxis()->SetTitle(ylabel.str().c_str());
+            //hists[h]->GetYaxis()->SetTitle(ylabel.str().c_str());
+            hists[h]->GetYaxis()->SetLabelSize(0.08);
+            hists[h]->GetYaxis()->SetNdivisions(0);
+            hists[h]->GetYaxis()->SetTitleSize(0.08);
+            hists[h]->GetYaxis()->CenterTitle(true);
             hists[h]->GetXaxis()->SetTitle(label[v].c_str());
+            hists[h]->GetXaxis()->SetNdivisions(1);
+            hists[h]->GetXaxis()->SetLabelSize(0.08);
+            hists[h]->GetXaxis()->SetTitleSize(0.08);
+            hists[h]->GetXaxis()->CenterTitle(true);
             hists[h]->SetMinimum(0.);
-            hists[h]->SetMaximum(1.5 * max);
+            //rounding: 
+            max = (int)(1.2* max * 100 + .5);
+            max = (float) max / 100;
+            if(variables[v] != "e_had_over_e_em")hists[h]->SetMaximum(max);
+            if(variables[v] == "e_had_over_e_em") hists[h]->SetMaximum(0.8);
             legend->AddEntry(hists[h], legend_names[h].c_str(), "l");
 
         }
@@ -193,7 +206,8 @@ void PlotDifferences() {
 
         TCanvas *c = new TCanvas("plot", "plot", 800, 600);
         gStyle->SetOptStat(0);
-        c->SetLeftMargin(0.15);
+        //c->SetLeftMargin(0.25);
+        c->SetBottomMargin(0.2);
         hists[0]->Draw("HIST");
 
 

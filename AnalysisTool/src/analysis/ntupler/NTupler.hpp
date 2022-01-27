@@ -15,6 +15,7 @@
 #include "TTree.h"
 
 #define MAX_JETS 20
+#define MAX_PROCESSED_JETS 100000
 #define JET_CONE 0.4
 #define JET_CONE_STEP 0.1
 #define JET_CONE_N 4 // 0.4/0.1
@@ -51,11 +52,11 @@ class NTupler: AnalysisTool
     TFile* file;
     TTree* tree;
 
-    Jet* selected_jets[MAX_JETS];
-    size_t num_selected_jets;
+    std::vector<Jet*> selected_jets;
     SampleType sample_type;
 
     size_t printed;
+    int number_of_processed_jets;
 
     void GetBackgroundEventJets();
     void GetSignalEventJets();

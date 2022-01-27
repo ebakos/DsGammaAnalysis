@@ -15,7 +15,7 @@ TARGETDIR   := bin
 BUILDDIR    := obj
 
 #Flags, Libraries and Includes
-CFLAGS      := -Wall -Wextra -O3 -g `root-config --cflags` -march=native
+CFLAGS      := -Wall -Wextra -O0 -g `root-config --cflags`
 LFLAGS		:= `root-config --ldflags`
 LIB         := `root-config --cflags --glibs --libs` -lDelphes -ltbb
 INC         := -I/usr/local/include -I./src/ -I$(DELPHES_HOME)
