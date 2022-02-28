@@ -10,7 +10,7 @@ setup(
     package_data={'ml_tool': ["default_model.json"]},
     entry_points={
         'console_scripts': [
-            'ml_tool=ml_tool:__main__.main'
+            'ml_tool=ml_tool:main'
         ]
     },
     install_requires=[

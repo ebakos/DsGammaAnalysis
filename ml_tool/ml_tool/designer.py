@@ -20,9 +20,10 @@ def create_dense_layers(config):
         return_layers.append(layers.Dense(config['layer3_nodes'], activation=config['layer3_activation']))
     if config['layer3_dropout']:
         return_layers.append(layers.Dropout(config['layer3_dropout_nodes']))
-    return_layers.append(layers.Dense(1, activation=config['layer_output_activation']))
+    if config['run_options'] == "dense_only":
+        return_layers.append(layers.Dense(1, activation=config['layer_output_activation']))
     return return_layers
-    
+
 #This is needed to create model from the layers above
 def create_model(name, prepped_layers, input_size):
 
@@ -36,24 +37,25 @@ def create_conv_layers(config):
 
     return_layers = []
     param1 = config['conv_layer1_nodes']
-    return_layers.append(layers.Conv2D(param1[0], (param1[1], param1[2]), activation = config['conv_layer1_activation']))
+    return_layers.append(layers.Conv2D(param1[0], (param1[1], param1[2]), activation = config['conv_layer1_activation'], padding="same"))
     if config['conv_layer1_maxpooling']:
         return_layers.append(layers.MaxPooling2D())
     if config['conv_layer2']:
         param2 = config['conv_layer2_nodes']
-        return_layers.append(layers.Conv2D(param2[0], (param2[1], param2[2]), activation = config['conv_layer2_activation']))
+        return_layers.append(layers.Conv2D(param2[0], (param2[1], param2[2]), activation = config['conv_layer2_activation'], padding="same"))
     if config['conv_layer2_maxpooling']:
         return_layers.append(layers.MaxPooling2D())
     if config['conv_layer3']:
         param3 = config['conv_layer3_nodes']
-        return_layers.append(layers.Conv2D(param3[0], (param3[1], param3[2]), activation = config['conv_layer3_activation']))
+        return_layers.append(layers.Conv2D(param3[0], (param3[1], param3[2]), activation = config['conv_layer3_activation'], padding="same"))
     if config['conv_layer3_maxpooling']:
         return_layers.append(layers.MaxPooling2D())
     return_layers.append(layers.Flatten())
     # Dense layers to finish the convoutional model:
     if config['conv_dense']:
         return_layers.append(layers.Dense(config['conv_denselayer_nodes'], activation=config['conv_denselayer_activation']))
-    return_layers.append(layers.Dense(1, config['conv_output_activation']))
+    if config['run_options'] == 'conv_only':
+        return_layers.append(layers.Dense(1, config['conv_output_activation']))
     return return_layers
 
 #This is needed to create model from the layers above
@@ -66,11 +68,10 @@ def create_conv_model(name, prepped_layers, conv_input_shape):
 
 # convolutional + dense
 def create_conv_plus_dense_model(config, dense_input_shape, conv_input_shape, dense_layers, conv_layers):
-    
     #dense layers
     final_dense_layers = [layers.InputLayer(input_shape=dense_input_shape)] + dense_layers
     dense = keras.Sequential(final_dense_layers)
-    
+
     #convolutional layers
     final_conv_layers = [layers.InputLayer(input_shape=conv_input_shape)] + conv_layers
     conv = keras.Sequential(final_conv_layers)
