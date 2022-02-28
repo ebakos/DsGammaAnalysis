@@ -261,6 +261,10 @@ void NTupler::ProcessEvent() {
         }
 
         //filling branches:
+        br_jet_pt = jet->PT;
+        br_jet_eta = jet->Eta;
+        br_jet_phi = jet->Phi;
+
         br_delta_eta = jet->DeltaEta; //Width of the jet in eta
         br_delta_phi = jet->DeltaPhi; //Width of the jet in phi
         br_n_neutral = jet->NNeutrals; //Netural particle multiplicity

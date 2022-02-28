@@ -62,6 +62,10 @@ class NTupler: AnalysisTool
     void GetSignalEventJets();
     bool PassCommonJetCuts(Jet* jet);
 
+    
+    double br_jet_pt;
+    double br_jet_eta;
+    double br_jet_phi;
     double br_delta_eta;
     double br_delta_phi;
     double br_n_neutral;
