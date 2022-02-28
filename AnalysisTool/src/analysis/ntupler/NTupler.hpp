@@ -15,7 +15,7 @@
 #include "TTree.h"
 
 #define MAX_JETS 20
-#define MAX_PROCESSED_JETS 100000
+#define MAX_PROCESSED_JETS 80000
 #define JET_CONE 0.4
 #define JET_CONE_STEP 0.1
 #define JET_CONE_N 4 // 0.4/0.1
