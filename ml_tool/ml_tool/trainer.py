@@ -58,7 +58,7 @@ def train(dataset: DataSet, model_directory, config):
         model.save(model_directory)
 
     ## run with combined model: Dense + Convoltutional
-    elif config['run_options'] == 'dense_conv':
+    elif config['run_options'] == 'combi':
         dense_layers = create_dense_layers(config)
         conv_layers = create_conv_layers(config)
         model = create_conv_plus_dense_model(config, len(dataset.keys()) - 1, dataset.image_dimensions(), dense_layers, conv_layers)

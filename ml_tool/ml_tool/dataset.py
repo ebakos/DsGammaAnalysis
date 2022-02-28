@@ -26,14 +26,14 @@ class DataSet:
     def transform(keys, data):
         keys = keys.copy()
         if 'jet_image' in keys:
-            jet_img_data = data['jet_image'].array(library='np')
+            jet_img_data = data['jet_image'].array(library='np')[:80000]
             keys.remove('jet_image')
             if not keys:
                 return jet_img_data
 
-            otherdata = np.array(data.arrays(keys, library='np', how=tuple)).T
+            otherdata = np.array(data.arrays(keys, library='np', how=tuple)).T[:80000]
             return otherdata, jet_img_data
-        return np.array(data.arrays(keys, library='np', how=tuple)).T
+        return np.array(data.arrays(keys, library='np', how=tuple)).T[:80000]
 
     def __init__(self, directory, train_mode=BackgroundMode.Mixed, test_mode=BackgroundMode.Mixed, keys=nominal_keys):
         path = Path(directory).resolve()
@@ -127,14 +127,14 @@ class DataSet:
                     image_sigs=[self.wp_image_train, self.wm_image_train]
                 )
             elif self.train_mode == BackgroundMode.GGOnly:
-                return self._dataset(
+                return self._dataset_withimage(
                     bkgs=[self.gg_data_train],
                     image_bkgs=[self.gg_image_train],
                     sigs=[self.wp_data_train, self.wm_data_train],
                     image_sigs=[self.wp_image_train, self.wm_image_train]
                 )
             elif self.train_mode == BackgroundMode.QQOnly:
-                return self._dataset(
+                return self._dataset_withimage(
                     bkgs=[self.qq_data_train],
                     image_bkgs=[self.qq_image_train],
                     sigs=[self.wp_data_train, self.wm_data_train],
@@ -168,14 +168,14 @@ class DataSet:
                     image_sigs=[self.wp_image_test, self.wm_image_test]
                 )
             elif self.test_mode == BackgroundMode.GGOnly:
-                return self._dataset(
+                return self._dataset_withimage(
                     bkgs=[self.gg_data_test],
                     image_bkgs=[self.gg_image_test],
                     sigs=[self.wp_data_test, self.wm_data_test],
                     image_sigs=[self.wp_image_test, self.wm_image_test]
                 )
             elif self.test_mode == BackgroundMode.QQOnly:
-                return self._dataset(
+                return self._dataset_withimage(
                     bkgs=[self.qq_data_test],
                     image_bkgs=[self.qq_image_test],
                     sigs=[self.wp_data_test, self.wm_data_test],

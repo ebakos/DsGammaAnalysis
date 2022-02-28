@@ -6,3 +6,5 @@ for dir in os.environ.get("PATH").split(os.pathsep):
         os.add_dll_directory(dir)
     except:
         pass
+
+from .__main__ import main

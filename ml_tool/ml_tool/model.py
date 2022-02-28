@@ -28,13 +28,13 @@ class Model:
 
     @classmethod
     def load_multi(cls, directory) -> List['Model']:
-        return [cls.load(file) for file in Path(directory).resolve().glob("*")]
+        return [cls.load(file) for file in Path(directory).resolve().glob("*") if file.is_dir() and (file  / ".custom.metadata.json").exists()]
 
     @classmethod
     def load_multi_meta_only(cls, directory) -> List['Model']:
         return [Model(
             model=None,
             **json.loads((file / ".custom.metadata.json").read_text())
-        ) for file in Path(directory).resolve().glob("*")]
+        ) for file in Path(directory).resolve().glob("*") if file.is_dir() and (file  / ".custom.metadata.json").exists()]
 
 
