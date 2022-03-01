@@ -22,6 +22,9 @@ NTupler::NTupler(std::string sample_ident, ExRootTreeReader* reader) : consisten
     }    
     
     tree = new TTree("DS", "DS tagger ML tuples");
+    tree->Branch("jet_pt", &br_jet_pt);
+    tree->Branch("jet_eta", &br_jet_eta);
+    tree->Branch("jet_phi", &br_jet_phi);
     tree->Branch("delta_eta", &br_delta_eta);
     tree->Branch("delta_phi", &br_delta_phi);
     tree->Branch("n_neutral", &br_n_neutral);
