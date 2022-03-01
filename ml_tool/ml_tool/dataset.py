@@ -55,7 +55,7 @@ class DataSet:
         (self.wp_data_train, self.wp_data_test), (self.wm_data_train, self.wm_data_test) = (\
             train_test_split(
                 ds,
-                test_size=0.1,
+                test_size=0.3,
                 shuffle=True,
                 random_state=0
             )
@@ -74,7 +74,7 @@ class DataSet:
         (self.wm_data_train, self.wm_data_test, self.wm_image_train, self.wm_image_test) = (\
             train_test_split(
                 ds, img,
-                test_size=0.1,
+                test_size=0.3,
                 shuffle=True,
                 random_state=0
             )
