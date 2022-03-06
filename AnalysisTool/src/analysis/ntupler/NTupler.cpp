@@ -7,11 +7,16 @@
 
 NTupler::NTupler(std::string sample_ident, ExRootTreeReader* reader) : consistency(reader) {
     jets = reader->UseBranch("Jet");
+    genJets = reader->UseBranch("GenJet");
     tracks = reader->UseBranch("EFlowTrack");
     branchTower1 = reader->UseBranch("EFlowPhoton");
     branchTower2 = reader->UseBranch("EFlowNeutralHadron");
     printed = 0;
     number_of_processed_jets = 0;
+    zero_count = 0;
+    one_count = 0;
+    two_count = 0;
+    other_count = 0;
 
     for (size_t i = 0; i < JET_IMAGE_DIM; ++i) {
         for (size_t j = 0; j < JET_IMAGE_DIM; ++j) {
@@ -100,19 +105,70 @@ void NTupler::GetSignalEventJets() {
     selected_jets.push_back((Jet*) jets->At(mini));
 }
 
+/* Selection from truth: not good
 void NTupler::GetBackgroundEventJets() {
     numJets = jets->GetEntriesFast();
 
+    auto bkgps = consistency.GetBkgParticles(sample_type == SampleType::BackgroundQQ);
+    if (bkgps.first == nullptr) {
+        std::cerr << "Invalid event" << std::endl;
+        return;
+    }
+
+    double minr_one = 0.2, minr_two = 0.2;
+    long long mini_one = -1, mini_two = -1;
     for (long long i = 0; i < numJets; ++i) {
         Jet *jet = (Jet*) jets->At(i);
 
         if (!PassCommonJetCuts(jet)) continue;
 
-        if (
-            (sample_type == SampleType::BackgroundGG && jet->Flavor == 21) ||
-            (sample_type == SampleType::BackgroundQQ && (jet->Flavor > 0 && jet->Flavor < 6))
-        ){
-            selected_jets.push_back(jet);
+        double r = jet->P4().DeltaR(bkgps.first->P4());
+        if (r < minr_one) {
+            minr_one = r;
+            mini_one = i;
+        }
+
+        r = jet->P4().DeltaR(bkgps.second->P4());
+        if (r < minr_two) {
+            minr_two = r;
+            mini_two = i;
+        }
+    }
+
+    if (mini_one != -1) selected_jets.push_back((Jet*) jets->At(mini_one));
+    if (mini_two != -1) selected_jets.push_back((Jet*) jets->At(mini_two));
+}*/
+
+// Selection from genjet
+void NTupler::GetBackgroundEventJets() {
+    numJets = jets->GetEntriesFast();
+    numGenJets = genJets->GetEntriesFast();
+
+    for (long long gj = 0; gj < numGenJets; ++gj) {
+        Jet *genJet = (Jet*) genJets->At(gj);
+    
+        double minr = 0.4;
+        long long mini = -1;
+        for (long long i = 0; i < numJets; ++i) {
+            Jet *jet = (Jet*) jets->At(i);
+
+            if (!PassCommonJetCuts(jet)) continue;
+            
+            if (
+                (sample_type == SampleType::BackgroundGG && jet->Flavor != 21) ||
+                (sample_type == SampleType::BackgroundQQ && (jet->Flavor <= 0 || jet->Flavor >= 6))
+            )
+                continue;
+
+            double r = jet->P4().DeltaR(genJet->P4());
+            if (r < minr) {
+                minr = r;
+                mini = i;
+            }
+        }
+
+        if (mini >= 0) {
+            selected_jets.push_back((Jet*) jets->At(mini));
         }
     }
 }
@@ -126,6 +182,15 @@ void NTupler::ProcessEvent() {
     } else {
         GetBackgroundEventJets();
     }
+
+    if (selected_jets.size() == 0)
+        zero_count++;
+    else if (selected_jets.size() == 1)
+        one_count++;
+    else if (selected_jets.size() == 2)
+        two_count++;
+    else
+        other_count++;
     
     for (size_t i = 0; i < selected_jets.size(); ++i) {
         Jet *jet = selected_jets.at(i);
@@ -301,8 +366,12 @@ void NTupler::ProcessEvent() {
 }
 
 void NTupler::Finalize() {
+    std::cerr << "Events with 0 selected jets: " << zero_count << std::endl;
+    std::cerr << "Events with 1 selected jets: " << one_count << std::endl;
+    std::cerr << "Events with 2 selected jets: " << two_count << std::endl;
+    std::cerr << "Events with more selected jets: " << other_count << std::endl;
+    std::cerr << "Total tuples: " << one_count + 2 * two_count << std::endl;
 }
-
 
 void NTupler::make_jet_image(Jet *jet, double relative_eta_range, double relative_phi_range, size_t dim)
 {

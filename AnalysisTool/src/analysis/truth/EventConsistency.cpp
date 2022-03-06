@@ -188,6 +188,37 @@ GenParticle* TruthEventConsistency::GetDS() {
     return nullptr;
 }
 
+
+std::pair<GenParticle*, GenParticle*> TruthEventConsistency::GetBkgParticles(bool quark) {
+    numTruthParticles = truthParticles->GetEntriesFast();
+    GenParticle *one = nullptr, *two = nullptr;
+
+    for (long long i = 0; i < std::min(numTruthParticles, 50ll); ++i) {
+        GenParticle* me = GENPARTICLE(truthParticles->At(i));
+        int pid = abs(me->PID);
+        if (quark && (pid < 1 || pid > 6)) continue;
+        if (!quark && pid != 21) continue;
+
+        // Documentation says status==23 is outgoing of hardest subprocess
+        // https://pythia.org/latest-manual/ParticleProperties.html
+        if (me->Status != 23) continue;
+
+        if (one != nullptr) {
+            two = me;
+            break;
+        } else {
+            one = me;
+        }
+
+    }
+    
+    if (two == nullptr)
+        return std::make_pair(nullptr, nullptr);
+    else 
+        return std::make_pair(one, two);
+}
+
+
 void TruthEventConsistency::ProcessEvent() {
     numTruthParticles = truthParticles->GetEntriesFast();
 

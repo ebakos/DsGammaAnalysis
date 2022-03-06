@@ -42,6 +42,8 @@ class NTupler: AnalysisTool
 
     long long numJets;
     TClonesArray *jets;
+    long long numGenJets;
+    TClonesArray *genJets;
 
     long long numTracks;
     TClonesArray *tracks;
@@ -62,6 +64,10 @@ class NTupler: AnalysisTool
     void GetSignalEventJets();
     bool PassCommonJetCuts(Jet* jet);
 
+    long long zero_count;
+    long long one_count;
+    long long two_count;
+    long long other_count;
     
     double br_jet_pt;
     double br_jet_eta;

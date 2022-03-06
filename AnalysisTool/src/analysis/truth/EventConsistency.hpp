@@ -62,4 +62,5 @@ class TruthEventConsistency: AnalysisTool
     virtual void Finalize();
 
     GenParticle* GetDS();
+    std::pair<GenParticle*, GenParticle*> GetBkgParticles(bool quark);
 };
