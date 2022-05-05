@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Evelin"
+  given-names: "Bakos"
+  orcid: "https://orcid.org/0000-0002-1110-4433"
+title: "Identifying Ds decays at the LHC"
+date-released: 2022-05-05
+url: "https://github.com/ebakos/DsGammaAnalysis"
