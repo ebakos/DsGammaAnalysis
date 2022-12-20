@@ -26,22 +26,23 @@ void myText(Double_t x,Double_t y,Color_t color, const char *text) {
 
 void PlotDifferences() {
 
-    std::string output_folder  = "./sample_plots_PU/";
+    std::string output_folder  = "./variable_plots_cc_bb/";
 
     std::string llable = "ATLAS, #sqrt{s} = 13.6 TeV";
     std::string reg_lab = "W(D_{s}, #gamma)";
 
-    std::vector<std::string> legend_names = {"W(D_{s}#gamma)", "W(D_{s}^{+}#gamma)+PU", "Bkg", "Bkg+PU"};
+    std::vector<std::string> legend_names = {"W(D_{s}#gamma)", "gg", "qq", "cc", "bb"};
 
-    std::vector<std::string> file = {/*"delphes_files/signal.root",*/
-                                     /*"AnalysisTool/files/wplus_ntuples.root",*/
-                                     "delphes_files/signal_ntuple.root",
-                                     "delphes_files/signal_PU_ntuple.root",
-                                     "delphes_files/bkg_ntuple.root",
-                                     "delphes_files/bkg_PU_ntuple.root"};
-                                     //"delphes_files/qq_ntuples.root"};
+    std::vector<std::string> file = {"/mnt/c/Users/bakos/Documents/Linux/ML/data/signal_ntuple.root",
+                                     "/mnt/c/Users/bakos/Documents/Linux/ML/data/gg_ntuples.root",
+                                     "/mnt/c/Users/bakos/Documents/Linux/ML/data/qq_ntuples.root",
+                                     "/mnt/c/Users/bakos/Documents/Linux/ML/data/cc_ntuples.root",
+                                     "/mnt/c/Users/bakos/Documents/Linux/ML/data/bb_ntuples.root"};
 
-    std::vector<std::string> variables = {"delta_eta", 
+    std::vector<std::string> variables = {"jet_pt",
+                                          "jet_eta",  
+                                          "jet_phi",
+                                          "delta_eta", 
                                           "delta_phi",
                                           "n_neutral",
                                           "n_charged",
@@ -67,7 +68,10 @@ void PlotDifferences() {
                                           "tau_1",
                                           "tau_2"};
 
-    std::vector<std::string> label = {"#Delta#eta", 
+    std::vector<std::string> label = {"p_{T}(j)",
+                                      "#eta(j)",
+                                      "#phi(j)",
+                                      "#Delta#eta", 
                                       "#Delta#phi",
                                       "n_{0}",
                                       "n_{ch}",
@@ -92,8 +96,11 @@ void PlotDifferences() {
                                       "#tau_{0}",
                                       "#tau_{1}",
                                       "#tau_{2}"};
-    std::vector<int> bin_number = {40, 40, 20, 20, 5, 30, 2, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40};
-    std::vector<std::pair<double,double>> bin_boundaries= { { 0, 0.4}, 
+    std::vector<int> bin_number = {75, 25, 40, 40, 40, 20, 20, 5, 30, 2, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40};
+    std::vector<std::pair<double,double>> bin_boundaries= { {25, 100.},
+                                                            {0, 2.5},
+                                                            {-4, 4},
+                                                            { 0, 0.4}, 
                                                             { 0, 0.4},
                                                             { 0, 20},
                                                             { 0, 20},
@@ -136,9 +143,11 @@ void PlotDifferences() {
         std::cout<<"Plotting "<<variables[v]<<std::endl;
         for (int fileNumber = 0; fileNumber < file.size(); fileNumber++)
         {
-
+            
             TFile *f = new TFile(file[fileNumber].c_str(), "read");
             TTree *t = (TTree*) f->Get("DS");
+
+            //std::cout<<"File: "<<file[fileNumber].c_str()<<std::endl;
 
             //set up variables
             double variable;
@@ -179,7 +188,7 @@ void PlotDifferences() {
             }
         }
 
-        std::vector<double> colors = {632, 600, 419, 807};
+        std::vector<double> colors = {632, 600, 419, 807, 616};
 
         for (int h = 0; h < hists.size(); h++)
         {
@@ -218,13 +227,13 @@ void PlotDifferences() {
             hists[h]->Draw("HIST SAME");
         }
         
-        myText(0.2, 0.85, 1, llable.c_str());  //0.83
-        myText(0.2, 0.80, 1, reg_lab.c_str()); //0.78
+        //myText(0.2, 0.85, 1, llable.c_str());  //0.83
+        //myText(0.2, 0.80, 1, reg_lab.c_str()); //0.78
         legend->Draw();
 
         c->Update();
         std::string pdfname = output_folder + variables[v] + ".pdf";
-        //c->SaveAs(pdfname.c_str());
+        c->SaveAs(pdfname.c_str());
         std::string pngname = output_folder + variables[v] + ".png";
         c->SaveAs(pngname.c_str());
         c->Close();

@@ -37,7 +37,7 @@ class TruthEventConsistency: AnalysisTool
     TH1D* delta_r_ds_gamma;
     TH2D* delta_ds_gamma;
 
-    //TH1D* jet_n;
+    TH1D* jet_n;
     //TH1D* jet_delta_r;
     //TH1D* jet_delta_phi;
     //TH1D* jet_delta_eta; 

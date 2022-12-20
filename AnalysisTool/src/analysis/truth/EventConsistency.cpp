@@ -156,7 +156,7 @@ TruthEventConsistency::TruthEventConsistency(ExRootTreeReader* reader) {
     delta_r_ds_gamma = new TH1D("truth_delta_r_ds_gamma", "Delta-R Ds-Gamma", 60, 0., 6.);
     delta_ds_gamma = new TH2D("truth_delta_ds_gamma", "Delta Ds-Gamma", 40, -4., 4, 40, 0., 10.);
 
-    //jet_n = new TH1D("truth_gluon_jet_n", "Truth gluon jet multiplicity", 10, 0., 10.);
+    jet_n = new TH1D("jet_n", "Truth jet multiplicity", 5, 0., 5.);
     //jet_delta_r = new TH1D("truth_gluon_jet_delta_r", "Delta-R truth jets", 60, 0., 6.);
     //jet_delta_phi = new TH1D("truth_jet_delta_phi", "Delta-Phi truth jets", 80, -4., 4);
     //jet_delta_eta = new TH1D("truth_jet_delta_eta", "Delta-Eta truth jets", 40, 0., 10.0);
@@ -164,7 +164,7 @@ TruthEventConsistency::TruthEventConsistency(ExRootTreeReader* reader) {
     //jet_width_eta = new TH1D("truth_jet_wdth_eta", "Truth jets width in eta", 25, 0., 0.5);
 
     truthParticles = reader->UseBranch("Particle");
-    //genJets = reader->UseBranch("GenJet");
+    genJets = reader->UseBranch("GenJet");
     valid_events = 0;
     invalid_events = 0;
 }
@@ -275,20 +275,20 @@ void TruthEventConsistency::ProcessEvent() {
     }
 
     //check truth jets:
-    /*numGenJets = genJets->GetEntriesFast(); 
+    numGenJets = genJets->GetEntriesFast(); 
     std::vector<Jet*> truth_jet;
     for (long long i = 0; i < numGenJets; ++i) 
     {
         Jet *jet = (Jet*) genJets->At(i);
         
         truth_jet.push_back(jet);
-        jet_width_phi->Fill(jet->DeltaPhi);
-        jet_width_eta->Fill(jet->DeltaEta);
+        //jet_width_phi->Fill(jet->DeltaPhi);
+        //jet_width_eta->Fill(jet->DeltaEta);
     }
 
     //plot DR between the 
     jet_n -> Fill (truth_jet.size());
-    for(unsigned long k = 0; k <truth_jet.size(); k++)
+    /*for(unsigned long k = 0; k <truth_jet.size(); k++)
     {   
         if (truth_jet.size() == 0) continue;
         for(unsigned long l = k + 1; l < truth_jet.size(); l++)

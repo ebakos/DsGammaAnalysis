@@ -18,7 +18,7 @@ setup(
         "matplotlib",
         "tensorflow",
         "uproot",
-        "sklearn",
+        "scikit-learn",
         "pandas",
         "seaborn"
     ],

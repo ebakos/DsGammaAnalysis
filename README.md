@@ -141,7 +141,7 @@ This metadata is used for plotting.
 
 ### Plot:
 
-This will plot every model from the model directory. 
+This will plot the ROC curve of every model from the model directory.
 
 To run type `ml_tool` with the arguments: 
 ```
@@ -153,3 +153,35 @@ To run type `ml_tool` with the arguments:
   -p PLOT_DIRECTORY, --plot-directory PLOT_DIRECTORY
                         Where to store plot images
 ```
+
+### Tabulate results: 
+Creates a file with all the models listed in a folder, together with the variable values. 
+
+Usage: 
+```usage: ml_tool tabulate [-h] [-m MODEL_DIRECTORY] variable                                                          
+
+positional arguments:                                       
+  variable              Variable name
+
+options:  
+  -h, --help            show this help message and exit  
+  -m MODEL_DIRECTORY, --model-directory MODEL_DIRECTORY                        
+                        Where from load the model files
+```
+
+Example: `ml_tool tabulate accuracy`
+
+### Compariplot 
+
+Creates plot with all the models. 
+
+Arguments: 
+- `model-directory`: Where from load model files
+- `plot-directory`: Where to store plot images
+- `variable`: Variable out of metadata which to put on the Y axis, for example `accuracy`
+- `range`: Y-axis range.
+- `constraint`: constraints on variables. Filter out variables, for example `--constraint layer2 True` will only plot models where layer 2 is present. Can be used with any variables from the config file.
+- `category`: Category for the X axis. 
+- `color-category`: colour of points category. Makes it possible to plot 2 variables in the same time: one as the x-axis, the second as a color.
+- `filename`: output plot filename.
+- `markersize`: markersize.
